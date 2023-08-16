@@ -223,7 +223,7 @@ export async function onStatusJob(body: any) {
     return { error: error, errorOccured: true };
   }
 }
-//_____________________________________________________________________________
+
 export const cancelJob = async (body: any) => {
   try {
     const { payload } = buildCancelRequest(body);
