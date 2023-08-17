@@ -22,7 +22,6 @@ app.use(express.json());
 
 app.use("/job", jobRoutes());
 
-app.use("/mentorship", mentorshipRoutes());
 app.use("/scholarship", scholarshipsRoutes());
 app.use("/mentorship", mentorshipRoutes());
 app.use("/course", trainingRoutes());

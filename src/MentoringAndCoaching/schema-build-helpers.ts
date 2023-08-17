@@ -24,9 +24,17 @@ export const buildContext = (input: any = {}) => {
   return context;
 };
 
-export const buildOnSearchMergedResponse = async (response: any = {}, body: any = {}) => {
-  return buildSearchResponse(response.searchRes, body, response?.itemRes?.[0]?.data?.mentorship, response?.itemRes?.[1]?.data?.mentorship);
-}
+export const buildOnSearchMergedResponse = async (
+  response: any = {},
+  body: any = {}
+) => {
+  return buildSearchResponse(
+    response.searchRes,
+    body,
+    response?.itemRes?.[0]?.data?.mentorship,
+    response?.itemRes?.[1]?.data?.mentorship
+  );
+};
 
 export const buildSearchRequest = (input: any = {}) => {
   const context = buildContext({
@@ -53,104 +61,176 @@ export const buildSearchRequest = (input: any = {}) => {
   }
 
   if (input?.loggedInUserEmail) {
-    optional.user = { "email": input?.loggedInUserEmail };
+    optional.user = { email: input?.loggedInUserEmail };
   }
 
   return { payload: { context, message: { intent } }, optional };
 };
 
-export const buildSearchResponse = (response: any = {}, body: any = {}, savedItems = [], appliedItems = []) => {
-  const input = response?.data?.responses?.[0];
-  if (!input)
-    return { status: 200 };
-  const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = input?.context ?? {};
-  const context = { transactionId, messageId, bppId, bppUri };
+export const buildSearchResponse = (
+  response: any = {},
+  body: any = {},
+  savedItems = [],
+  appliedItems = []
+) => {
+  const bpps_response = response?.data?.responses;
+  if (!bpps_response) return { status: 200 };
+  const finalData = bpps_response.map((bpp_response: any) => {
+    const {
+      transaction_id: transactionId,
+      message_id: messageId,
+      bpp_id: bppId,
+      bpp_uri: bppUri
+    }: any = bpp_response?.context ?? {};
+    const context = { transactionId, messageId, bppId, bppUri };
 
-  const { providers } = input.message?.catalog;
+    const { providers } = bpp_response.message?.catalog;
 
-  const mentorshipProviders = providers?.map((provider: any) => ({
-    id: provider?.id,
-    code: provider?.descriptor?.code,
-    name: provider?.descriptor?.name,
-    description: provider?.descriptor?.short_desc,
+    const mentorshipProviders = providers?.map((provider: any) => ({
+      id: provider?.id,
+      code: provider?.descriptor?.code,
+      name: provider?.descriptor?.name,
+      description: provider?.descriptor?.short_desc,
 
-    mentorships: provider?.items?.map((item: any) => ({
-      id: item?.id,
-      code: item?.descriptor?.code,
-      name: item?.descriptor?.name,
-      description: item?.descriptor?.short_desc,
-      longDescription: item?.descriptor?.long_desc,
+      mentorships: provider?.items?.map((item: any) => ({
+        id: item?.id,
+        code: item?.descriptor?.code,
+        name: item?.descriptor?.name,
+        description: item?.descriptor?.short_desc,
+        longDescription: item?.descriptor?.long_desc,
 
-      imageLocations: item?.descriptor?.images?.map((image: any) => image?.url),
-      categories: provider?.categories?.filter((category: any) => item?.category_ids?.find((categoryId: any) => categoryId == category?.id))
-        ?.map((category: any) => ({ id: category?.id, code: category?.descriptor?.code, name: category?.descriptor?.name })),
-      available: item?.quantity?.available?.count,
-      allocated: item?.quantity?.allocated?.count,
-      price: item?.price?.value,
-      userSavedItem: !!(savedItems?.find((savedItem: any) => savedItem?.mentorship_id == item?.id)),
-      userAppliedItem: !!(appliedItems?.find((appliedItem: any) => appliedItem?.mentorship_id == item?.id)),
-      mentorshipSessions: provider?.fulfillments?.filter((fulfillment: any) => item?.fulfillment_ids?.find((fulfillmentId: any) => fulfillmentId == fulfillment?.id))
-        ?.map((fulfillment: any) => ({
-          id: fulfillment?.id,
-          language: fulfillment?.language?.[0],
-          timingStart: fulfillment?.time?.range?.start,
-          timingEnd: fulfillment?.time?.range?.end,
-          type: fulfillment?.type,
-          status: fulfillment?.tags?.find((tag: any) => tag?.descriptor?.code == "status")?.list?.[0]?.descriptor?.name,
-          timezone: fulfillment?.tags?.find((tag: any) => tag?.descriptor?.code == "timeZone")?.list?.[0]?.descriptor?.name,
-          userSavedItem: !!(savedItems?.find((savedItem: any) => savedItem?.mentorshipSession_id == fulfillment?.id)),
-          userAppliedItem: !!(appliedItems?.find((appliedItem: any) => appliedItem?.mentorshipSession_id == fulfillment?.id)),
-          mentor: {
-            id: fulfillment?.agent?.person?.id,
-            name: fulfillment?.agent?.person?.name,
-            gender: fulfillment?.agent?.person?.gender,
-            image: fulfillment?.agent?.person?.image,
-            rating: fulfillment?.agent?.person?.rating,
-            aboutMentor: item?.tags?.find((tag: any) => tag?.descriptor?.code == "about_mentor")?.list?.find((li: any) => li?.descriptor?.code == "about_mentor")?.descriptor?.name,
-            qualification: item?.tags?.find((tag: any) => tag?.descriptor?.code == "qualification")?.list?.find((li: any) => li?.descriptor?.code == "qualification")?.descriptor?.name,
-            experience: item?.tasg?.find((tag: any) => tag?.descriptor?.code == "professional_experience")?.list?.find((li: any) => li?.descriptor?.code == "professional_experience")?.descriptor?.name,
-            totalMeetings: item?.tags?.find((tag: any) => tag?.descriptor?.code == "total_meetings")?.list?.find((li: any) => li?.descriptor?.code == "total_meetings")?.descriptor?.name,
-            specialisation: item?.tags?.find((tag: any) => tag?.descriptor?.code == "specialist_in")?.list?.find((li: any) => li?.descriptor?.code == "specialist_in")?.descriptor?.name,
-          }
-        })),
-      recommendedFor: item?.tags?.find((tag: any) => tag?.code == "recommended_for")
-        ?.list?.map((li: any) => ({ recommendationForCode: li?.descriptor?.code, recommendationForName: li?.descriptor?.name })),
-    })),
-  }));
-
-  return { data: { context, mentorshipProviders } };
+        imageLocations: item?.descriptor?.images?.map(
+          (image: any) => image?.url
+        ),
+        categories: provider?.categories
+          ?.filter((category: any) =>
+            item?.category_ids?.find(
+              (categoryId: any) => categoryId == category?.id
+            )
+          )
+          ?.map((category: any) => ({
+            id: category?.id,
+            code: category?.descriptor?.code,
+            name: category?.descriptor?.name
+          })),
+        available: item?.quantity?.available?.count,
+        allocated: item?.quantity?.allocated?.count,
+        price: item?.price?.value,
+        userSavedItem: !!savedItems?.find(
+          (savedItem: any) => savedItem?.mentorship_id == item?.id
+        ),
+        userAppliedItem: !!appliedItems?.find(
+          (appliedItem: any) => appliedItem?.mentorship_id == item?.id
+        ),
+        mentorshipSessions: provider?.fulfillments
+          ?.filter((fulfillment: any) =>
+            item?.fulfillment_ids?.find(
+              (fulfillmentId: any) => fulfillmentId == fulfillment?.id
+            )
+          )
+          ?.map((fulfillment: any) => ({
+            id: fulfillment?.id,
+            language: fulfillment?.language?.[0],
+            timingStart: fulfillment?.time?.range?.start,
+            timingEnd: fulfillment?.time?.range?.end,
+            type: fulfillment?.type,
+            status: fulfillment?.tags?.find(
+              (tag: any) => tag?.descriptor?.code == "status"
+            )?.list?.[0]?.descriptor?.name,
+            timezone: fulfillment?.tags?.find(
+              (tag: any) => tag?.descriptor?.code == "timeZone"
+            )?.list?.[0]?.descriptor?.name,
+            userSavedItem: !!savedItems?.find(
+              (savedItem: any) =>
+                savedItem?.mentorshipSession_id == fulfillment?.id
+            ),
+            userAppliedItem: !!appliedItems?.find(
+              (appliedItem: any) =>
+                appliedItem?.mentorshipSession_id == fulfillment?.id
+            ),
+            mentor: {
+              id: fulfillment?.agent?.person?.id,
+              name: fulfillment?.agent?.person?.name,
+              gender: fulfillment?.agent?.person?.gender,
+              image: fulfillment?.agent?.person?.image,
+              rating: fulfillment?.agent?.person?.rating,
+              aboutMentor: item?.tags
+                ?.find((tag: any) => tag?.descriptor?.code == "about_mentor")
+                ?.list?.find(
+                  (li: any) => li?.descriptor?.code == "about_mentor"
+                )?.descriptor?.name,
+              qualification: item?.tags
+                ?.find((tag: any) => tag?.descriptor?.code == "qualification")
+                ?.list?.find(
+                  (li: any) => li?.descriptor?.code == "qualification"
+                )?.descriptor?.name,
+              experience: item?.tasg
+                ?.find(
+                  (tag: any) =>
+                    tag?.descriptor?.code == "professional_experience"
+                )
+                ?.list?.find(
+                  (li: any) => li?.descriptor?.code == "professional_experience"
+                )?.descriptor?.name,
+              totalMeetings: item?.tags
+                ?.find((tag: any) => tag?.descriptor?.code == "total_meetings")
+                ?.list?.find(
+                  (li: any) => li?.descriptor?.code == "total_meetings"
+                )?.descriptor?.name,
+              specialisation: item?.tags
+                ?.find((tag: any) => tag?.descriptor?.code == "specialist_in")
+                ?.list?.find(
+                  (li: any) => li?.descriptor?.code == "specialist_in"
+                )?.descriptor?.name
+            }
+          })),
+        recommendedFor: item?.tags
+          ?.find((tag: any) => tag?.code == "recommended_for")
+          ?.list?.map((li: any) => ({
+            recommendationForCode: li?.descriptor?.code,
+            recommendationForName: li?.descriptor?.name
+          }))
+      }))
+    }));
+    return { context, mentorshipProviders };
+  });
+  return { data: finalData };
 };
 
-export const buildSavedAppliedCategoryResponse = (savedResponse: any = {}, appliedResponse: any = {}) => {
+export const buildSavedAppliedCategoryResponse = (
+  savedResponse: any = {},
+  appliedResponse: any = {}
+) => {
   const savedInput = savedResponse?.data?.mentorship;
   const appliedInput = appliedResponse?.data?.mentorship;
 
   const mentorMap: any = {
-    saved: {}, applied: {}
+    saved: {},
+    applied: {}
   };
 
   if (savedResponse?.data) {
     savedInput.forEach(({ mentorship_id, mentorshipSession_id }: any) => {
-      mentorMap['saved'][mentorship_id] = true;
+      mentorMap["saved"][mentorship_id] = true;
       if (mentorshipSession_id) {
-        mentorMap['saved'][mentorship_id] = {};
-        mentorMap['saved'][mentorship_id][mentorshipSession_id] = true;
+        mentorMap["saved"][mentorship_id] = {};
+        mentorMap["saved"][mentorship_id][mentorshipSession_id] = true;
       }
     });
   }
 
   if (appliedResponse?.data) {
     appliedInput.forEach(({ mentorship_id, mentorshipSession_id }: any) => {
-      mentorMap['applied'][mentorship_id] = true;
+      mentorMap["applied"][mentorship_id] = true;
       if (mentorshipSession_id) {
-        mentorMap['applied'][mentorship_id] = {};
-        mentorMap['applied'][mentorship_id][mentorshipSession_id] = true;
+        mentorMap["applied"][mentorship_id] = {};
+        mentorMap["applied"][mentorship_id][mentorshipSession_id] = true;
       }
     });
   }
 
   return mentorMap;
-}
+};
 
 export const buildSelectRequest = (input: any = {}) => {
   const context = buildContext({
@@ -163,12 +243,15 @@ export const buildSelectRequest = (input: any = {}) => {
   return { payload: { context, message } };
 };
 export const buildSelectResponse = (response: any = {}, body: any = {}) => {
-
   const input = response?.data?.responses?.[0];
-  if (!input)
-    return { status: 200 };
+  if (!input) return { status: 200 };
 
-  const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = input?.context ?? {};
+  const {
+    transaction_id: transactionId,
+    message_id: messageId,
+    bpp_id: bppId,
+    bpp_uri: bppUri
+  }: any = input?.context ?? {};
   const context = { transactionId, messageId, bppId, bppUri };
 
   const provider = input.message?.order?.provider;
@@ -187,37 +270,78 @@ export const buildSelectResponse = (response: any = {}, body: any = {}) => {
       longDescription: item?.descriptor?.long_desc,
 
       imageLocations: item?.descriptor?.images?.map((image: any) => image?.url),
-      categories: provider?.categories?.filter((category: any) => item?.category_ids?.find((categoryId: any) => categoryId == category?.id))
-        ?.map((category: any) => ({ id: category?.id, code: category?.descriptor?.code, name: category?.descriptor?.name })),
+      categories: provider?.categories
+        ?.filter((category: any) =>
+          item?.category_ids?.find(
+            (categoryId: any) => categoryId == category?.id
+          )
+        )
+        ?.map((category: any) => ({
+          id: category?.id,
+          code: category?.descriptor?.code,
+          name: category?.descriptor?.name
+        })),
       available: item?.quantity?.available?.count,
       allocated: item?.quantity?.allocated?.count,
       price: item?.price?.value,
-      mentorshipSessions: provider?.fulfillments?.filter((fulfillment: any) => item?.fulfillment_ids?.find((fulfillmentId: any) => fulfillmentId == fulfillment?.id))
+      mentorshipSessions: provider?.fulfillments
+        ?.filter((fulfillment: any) =>
+          item?.fulfillment_ids?.find(
+            (fulfillmentId: any) => fulfillmentId == fulfillment?.id
+          )
+        )
         ?.map((fulfillment: any) => ({
           id: fulfillment?.id,
           language: fulfillment?.language?.[0],
           timingStart: fulfillment?.time?.range?.start,
           timingEnd: fulfillment?.time?.range?.end,
           type: fulfillment?.type,
-          status: fulfillment?.tags?.find((tag: any) => tag?.descriptor?.code == "status")?.list?.[0]?.descriptor?.name,
-          timezone: fulfillment?.tags?.find((tag: any) => tag?.descriptor?.code == "timeZone")?.list?.[0]?.descriptor?.name,
+          status: fulfillment?.tags?.find(
+            (tag: any) => tag?.descriptor?.code == "status"
+          )?.list?.[0]?.descriptor?.name,
+          timezone: fulfillment?.tags?.find(
+            (tag: any) => tag?.descriptor?.code == "timeZone"
+          )?.list?.[0]?.descriptor?.name,
           mentor: {
             id: fulfillment?.agent?.person?.id,
             name: fulfillment?.agent?.person?.name,
             gender: fulfillment?.agent?.person?.gender,
             image: fulfillment?.agent?.person?.image,
             rating: fulfillment?.agent?.person?.rating,
-            aboutMentor: item?.tags?.find((tag: any) => tag?.descriptor?.code == "about_mentor")?.list?.find((li: any) => li?.descriptor?.code == "about_mentor")?.descriptor?.name,
-            qualification: item?.tags?.find((tag: any) => tag?.descriptor?.code == "qualification")?.list?.find((li: any) => li?.descriptor?.code == "qualification")?.descriptor?.name,
-            experience: item?.tags?.find((tag: any) => tag?.descriptor?.code == "professional_experience")?.list?.find((li: any) => li?.descriptor?.code == "professional_experience")?.descriptor?.name,
-            totalMeetings: item?.tags?.find((tag: any) => tag?.descriptor?.code == "total_meetings")?.list?.find((li: any) => li?.descriptor?.code == "total_meetings")?.descriptor?.name,
-            specialisation: item?.tags?.find((tag: any) => tag?.descriptor?.code == "specialist_in")?.list?.find((li: any) => li?.descriptor?.code == "specialist_in")?.descriptor?.name,
+            aboutMentor: item?.tags
+              ?.find((tag: any) => tag?.descriptor?.code == "about_mentor")
+              ?.list?.find((li: any) => li?.descriptor?.code == "about_mentor")
+              ?.descriptor?.name,
+            qualification: item?.tags
+              ?.find((tag: any) => tag?.descriptor?.code == "qualification")
+              ?.list?.find((li: any) => li?.descriptor?.code == "qualification")
+              ?.descriptor?.name,
+            experience: item?.tags
+              ?.find(
+                (tag: any) => tag?.descriptor?.code == "professional_experience"
+              )
+              ?.list?.find(
+                (li: any) => li?.descriptor?.code == "professional_experience"
+              )?.descriptor?.name,
+            totalMeetings: item?.tags
+              ?.find((tag: any) => tag?.descriptor?.code == "total_meetings")
+              ?.list?.find(
+                (li: any) => li?.descriptor?.code == "total_meetings"
+              )?.descriptor?.name,
+            specialisation: item?.tags
+              ?.find((tag: any) => tag?.descriptor?.code == "specialist_in")
+              ?.list?.find((li: any) => li?.descriptor?.code == "specialist_in")
+              ?.descriptor?.name
           }
         })),
-      recommendedFor: item?.tags?.find((tag: any) => tag?.descriptor?.code == "recommended_for")
-        ?.list?.map((li: any) => ({ recommendationForCode: li?.descriptor?.code, recommendationForName: li?.descriptor?.name })),
-    })),
-  }
+      recommendedFor: item?.tags
+        ?.find((tag: any) => tag?.descriptor?.code == "recommended_for")
+        ?.list?.map((li: any) => ({
+          recommendationForCode: li?.descriptor?.code,
+          recommendationForName: li?.descriptor?.name
+        }))
+    }))
+  };
 
   return { data: { context, mentorshipProvider } };
 };
@@ -250,10 +374,14 @@ export const buildConfirmRequest = (input: any = {}) => {
 
 export const buildConfirmResponse = (response: any = {}, body: any = {}) => {
   const input = response?.data?.responses?.[0];
-  if (!input)
-    return { status: 200 };
+  if (!input) return { status: 200 };
 
-  const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = input?.context ?? {};
+  const {
+    transaction_id: transactionId,
+    message_id: messageId,
+    bpp_id: bppId,
+    bpp_uri: bppUri
+  }: any = input?.context ?? {};
   const context = { transactionId, messageId, bppId, bppUri };
 
   const order = input?.message?.order;
@@ -261,13 +389,22 @@ export const buildConfirmResponse = (response: any = {}, body: any = {}) => {
   const mentorshipApplicationId = order?.id;
   const mentorshipSession = {
     id: order?.fulfillments?.[0]?.id,
-    sessionJoinLinks: order?.fulfillments?.[0]?.tags?.find((tag: any) => tag?.descriptor?.code == 'joinLink')?.list?.map((li: any) => ({ id: li?.descriptor?.code, link: li?.descriptor?.name })),
+    sessionJoinLinks: order?.fulfillments?.[0]?.tags
+      ?.find((tag: any) => tag?.descriptor?.code == "joinLink")
+      ?.list?.map((li: any) => ({
+        id: li?.descriptor?.code,
+        link: li?.descriptor?.name
+      })),
     language: order?.fulfillments?.[0]?.language?.[0],
     timingStart: order?.fulfillments?.[0]?.time?.range?.start,
     timingEnd: order?.fulfillments?.[0]?.time?.range?.end,
     type: order?.fulfillments?.[0]?.type,
-    status: order?.fulfillments?.[0]?.tags?.find((tag: any) => tag?.descriptor?.code == "status")?.list?.[0]?.descriptor?.name,
-    timezone: order?.fulfillments?.[0]?.tags?.find((tag: any) => tag?.descriptor?.code == "timeZone")?.list?.[0]?.descriptor?.name,
+    status: order?.fulfillments?.[0]?.tags?.find(
+      (tag: any) => tag?.descriptor?.code == "status"
+    )?.list?.[0]?.descriptor?.name,
+    timezone: order?.fulfillments?.[0]?.tags?.find(
+      (tag: any) => tag?.descriptor?.code == "timeZone"
+    )?.list?.[0]?.descriptor?.name,
     mentor: {
       id: order?.fulfillments?.[0]?.agent?.person?.id,
       name: order?.fulfillments?.[0]?.agent?.person?.name,
@@ -275,11 +412,9 @@ export const buildConfirmResponse = (response: any = {}, body: any = {}) => {
       image: order?.fulfillments?.[0]?.agent?.person?.image,
       rating: order?.fulfillments?.[0]?.agent?.person?.rating
     }
-  }
+  };
 
   return { data: { context, mentorshipApplicationId, mentorshipSession } };
-
-
 };
 
 export const buildStatusRequest = (input: any = {}) => {
@@ -297,18 +432,21 @@ export const buildStatusRequest = (input: any = {}) => {
 };
 
 export const buildStatusResponse = (response: any = {}, body: any = {}) => {
-
   const input = response?.data?.responses?.[0];
-  if (!input)
-    return { status: 200 };
+  if (!input) return { status: 200 };
 
-  const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = input?.context ?? {};
+  const {
+    transaction_id: transactionId,
+    message_id: messageId,
+    bpp_id: bppId,
+    bpp_uri: bppUri
+  }: any = input?.context ?? {};
   const context = { transactionId, messageId, bppId, bppUri };
 
   const order = input.message?.order;
   const provider = order?.provider;
 
-  const mentorshipApplicationId = order?.id
+  const mentorshipApplicationId = order?.id;
   const mentorshipApplicationStatus = order?.state;
 
   const mentorshipProvider = {
@@ -325,39 +463,87 @@ export const buildStatusResponse = (response: any = {}, body: any = {}) => {
       longDescription: item?.descriptor?.long_desc,
 
       imageLocations: item?.descriptor?.images?.map((image: any) => image?.url),
-      categories: provider?.categories?.filter((category: any) => item?.category_ids?.find((categoryId: any) => categoryId == category?.id))
-        ?.map((category: any) => ({ id: category?.id, code: category?.descriptor?.code, name: category?.descriptor?.name })),
+      categories: provider?.categories
+        ?.filter((category: any) =>
+          item?.category_ids?.find(
+            (categoryId: any) => categoryId == category?.id
+          )
+        )
+        ?.map((category: any) => ({
+          id: category?.id,
+          code: category?.descriptor?.code,
+          name: category?.descriptor?.name
+        })),
       available: item?.quantity?.available?.count,
       allocated: item?.quantity?.allocated?.count,
       price: item?.price?.value,
-      mentorshipSessions: provider?.fulfillments?.filter((fulfillment: any) => item?.fulfillment_ids?.find((fulfillmentId: any) => fulfillmentId == fulfillment?.id))
+      mentorshipSessions: provider?.fulfillments
+        ?.filter((fulfillment: any) =>
+          item?.fulfillment_ids?.find(
+            (fulfillmentId: any) => fulfillmentId == fulfillment?.id
+          )
+        )
         ?.map((fulfillment: any) => ({
           id: fulfillment?.id,
           language: fulfillment?.language?.[0],
           timingStart: fulfillment?.time?.range?.start,
           timingEnd: fulfillment?.time?.range?.end,
           type: fulfillment?.type,
-          status: fulfillment?.tags?.find((tag: any) => tag?.descriptor?.code == "status")?.list?.[0]?.descriptor?.name,
-          timezone: fulfillment?.tags?.find((tag: any) => tag?.descriptor?.code == "timeZone")?.list?.[0]?.descriptor?.name,
+          status: fulfillment?.tags?.find(
+            (tag: any) => tag?.descriptor?.code == "status"
+          )?.list?.[0]?.descriptor?.name,
+          timezone: fulfillment?.tags?.find(
+            (tag: any) => tag?.descriptor?.code == "timeZone"
+          )?.list?.[0]?.descriptor?.name,
           mentor: {
             id: fulfillment?.agent?.person?.id,
             name: fulfillment?.agent?.person?.name,
             gender: fulfillment?.agent?.person?.gender,
             image: fulfillment?.agent?.person?.image,
             rating: fulfillment?.agent?.person?.rating,
-            aboutMentor: item?.tags?.find((tag: any) => tag?.descriptor?.code == "about_mentor")?.list?.find((li: any) => li?.descriptor?.code == "about_mentor")?.descriptor?.name,
-            qualification: item?.tags?.find((tag: any) => tag?.descriptor?.code == "qualification")?.list?.find((li: any) => li?.descriptor?.code == "qualification")?.descriptor?.name,
-            experience: item?.tags?.find((tag: any) => tag?.descriptor?.code == "professional_experience")?.list?.find((li: any) => li?.descriptor?.code == "professional_experience")?.descriptor?.name,
-            totalMeetings: item?.tags?.find((tag: any) => tag?.descriptor?.code == "total_meetings")?.list?.find((li: any) => li?.descriptor?.code == "total_meetings")?.descriptor?.name,
-            specialisation: item?.tags?.find((tag: any) => tag?.descriptor?.code == "specialist_in")?.list?.find((li: any) => li?.descriptor?.code == "specialist_in")?.descriptor?.name,
+            aboutMentor: item?.tags
+              ?.find((tag: any) => tag?.descriptor?.code == "about_mentor")
+              ?.list?.find((li: any) => li?.descriptor?.code == "about_mentor")
+              ?.descriptor?.name,
+            qualification: item?.tags
+              ?.find((tag: any) => tag?.descriptor?.code == "qualification")
+              ?.list?.find((li: any) => li?.descriptor?.code == "qualification")
+              ?.descriptor?.name,
+            experience: item?.tags
+              ?.find(
+                (tag: any) => tag?.descriptor?.code == "professional_experience"
+              )
+              ?.list?.find(
+                (li: any) => li?.descriptor?.code == "professional_experience"
+              )?.descriptor?.name,
+            totalMeetings: item?.tags
+              ?.find((tag: any) => tag?.descriptor?.code == "total_meetings")
+              ?.list?.find(
+                (li: any) => li?.descriptor?.code == "total_meetings"
+              )?.descriptor?.name,
+            specialisation: item?.tags
+              ?.find((tag: any) => tag?.descriptor?.code == "specialist_in")
+              ?.list?.find((li: any) => li?.descriptor?.code == "specialist_in")
+              ?.descriptor?.name
           }
         })),
-      recommendedFor: item?.tags?.find((tag: any) => tag?.descriptor?.code == "recommended_for")
-        ?.list?.map((li: any) => ({ recommendationForCode: li?.descriptor?.code, recommendationForName: li?.descriptor?.name })),
-    })),
-  }
+      recommendedFor: item?.tags
+        ?.find((tag: any) => tag?.descriptor?.code == "recommended_for")
+        ?.list?.map((li: any) => ({
+          recommendationForCode: li?.descriptor?.code,
+          recommendationForName: li?.descriptor?.name
+        }))
+    }))
+  };
 
-  return { data: { context, mentorshipApplicationId, mentorshipApplicationStatus, mentorshipProvider } };
+  return {
+    data: {
+      context,
+      mentorshipApplicationId,
+      mentorshipApplicationStatus,
+      mentorshipProvider
+    }
+  };
 };
 
 export const buildCancelRequest = (input: any = {}) => {
@@ -417,10 +603,14 @@ export const buildInitRequest = (input: any = {}) => {
 };
 export const buildInitResponse = (response: any = {}, body: any = {}) => {
   const input = response?.data?.responses?.[0];
-  if (!input)
-    return { status: 200 };
+  if (!input) return { status: 200 };
 
-  const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = input?.context ?? {};
+  const {
+    transaction_id: transactionId,
+    message_id: messageId,
+    bpp_id: bppId,
+    bpp_uri: bppUri
+  }: any = input?.context ?? {};
   const context = { transactionId, messageId, bppId, bppUri };
 
   const provider = input.message?.order?.provider;
@@ -439,37 +629,158 @@ export const buildInitResponse = (response: any = {}, body: any = {}) => {
       longDescription: item?.descriptor?.long_desc,
 
       imageLocations: item?.descriptor?.images?.map((image: any) => image?.url),
-      categories: provider?.categories?.filter((category: any) => item?.category_ids?.find((categoryId: any) => categoryId == category?.id))
-        ?.map((category: any) => ({ id: category?.id, code: category?.descriptor?.code, name: category?.descriptor?.name })),
+      categories: provider?.categories
+        ?.filter((category: any) =>
+          item?.category_ids?.find(
+            (categoryId: any) => categoryId == category?.id
+          )
+        )
+        ?.map((category: any) => ({
+          id: category?.id,
+          code: category?.descriptor?.code,
+          name: category?.descriptor?.name
+        })),
       available: item?.quantity?.available?.count,
       allocated: item?.quantity?.allocated?.count,
       price: item?.price?.value,
-      mentorshipSessions: provider?.fulfillments?.filter((fulfillment: any) => item?.fulfillment_ids?.find((fulfillmentId: any) => fulfillmentId == fulfillment?.id))
+      mentorshipSessions: provider?.fulfillments
+        ?.filter((fulfillment: any) =>
+          item?.fulfillment_ids?.find(
+            (fulfillmentId: any) => fulfillmentId == fulfillment?.id
+          )
+        )
         ?.map((fulfillment: any) => ({
           id: fulfillment?.id,
           language: fulfillment?.language?.[0],
           timingStart: fulfillment?.time?.range?.start,
           timingEnd: fulfillment?.time?.range?.end,
           type: fulfillment?.type,
-          status: fulfillment?.tags?.find((tag: any) => tag?.descriptor?.code == "status")?.list?.[0]?.descriptor?.name,
-          timezone: fulfillment?.tags?.find((tag: any) => tag?.descriptor?.code == "timeZone")?.list?.[0]?.descriptor?.name,
+          status: fulfillment?.tags?.find(
+            (tag: any) => tag?.descriptor?.code == "status"
+          )?.list?.[0]?.descriptor?.name,
+          timezone: fulfillment?.tags?.find(
+            (tag: any) => tag?.descriptor?.code == "timeZone"
+          )?.list?.[0]?.descriptor?.name,
           mentor: {
             id: fulfillment?.agent?.person?.id,
             name: fulfillment?.agent?.person?.name,
             gender: fulfillment?.agent?.person?.gender,
             image: fulfillment?.agent?.person?.image,
             rating: fulfillment?.agent?.person?.rating,
-            aboutMentor: item?.tags?.find((tag: any) => tag?.descriptor?.code == "about_mentor")?.list?.find((li: any) => li?.descriptor?.code == "about_mentor")?.descriptor?.name,
-            qualification: item?.tags?.find((tag: any) => tag?.descriptor?.code == "qualification")?.list?.find((li: any) => li?.descriptor?.code == "qualification")?.descriptor?.name,
-            experience: item?.tags?.find((tag: any) => tag?.descriptor?.code == "professional_experience")?.list?.find((li: any) => li?.descriptor?.code == "professional_experience")?.descriptor?.name,
-            totalMeetings: item?.tags?.find((tag: any) => tag?.descriptor?.code == "total_meetings")?.list?.find((li: any) => li?.descriptor?.code == "total_meetings")?.descriptor?.name,
-            specialisation: item?.tags?.find((tag: any) => tag?.descriptor?.code == "specialist_in")?.list?.find((li: any) => li?.descriptor?.code == "specialist_in")?.descriptor?.name,
+            aboutMentor: item?.tags
+              ?.find((tag: any) => tag?.descriptor?.code == "about_mentor")
+              ?.list?.find((li: any) => li?.descriptor?.code == "about_mentor")
+              ?.descriptor?.name,
+            qualification: item?.tags
+              ?.find((tag: any) => tag?.descriptor?.code == "qualification")
+              ?.list?.find((li: any) => li?.descriptor?.code == "qualification")
+              ?.descriptor?.name,
+            experience: item?.tags
+              ?.find(
+                (tag: any) => tag?.descriptor?.code == "professional_experience"
+              )
+              ?.list?.find(
+                (li: any) => li?.descriptor?.code == "professional_experience"
+              )?.descriptor?.name,
+            totalMeetings: item?.tags
+              ?.find((tag: any) => tag?.descriptor?.code == "total_meetings")
+              ?.list?.find(
+                (li: any) => li?.descriptor?.code == "total_meetings"
+              )?.descriptor?.name,
+            specialisation: item?.tags
+              ?.find((tag: any) => tag?.descriptor?.code == "specialist_in")
+              ?.list?.find((li: any) => li?.descriptor?.code == "specialist_in")
+              ?.descriptor?.name
           }
         })),
-      recommendedFor: item?.tags?.find((tag: any) => tag?.descriptor?.code == "recommended_for")
-        ?.list?.map((li: any) => ({ recommendationForCode: li?.descriptor?.code, recommendationForName: li?.descriptor?.name })),
-    })),
-  }
+      recommendedFor: item?.tags
+        ?.find((tag: any) => tag?.descriptor?.code == "recommended_for")
+        ?.list?.map((li: any) => ({
+          recommendationForCode: li?.descriptor?.code,
+          recommendationForName: li?.descriptor?.name
+        }))
+    }))
+  };
 
   return { data: { context, mentorshipProvider } };
+};
+
+export const buildTrackRequest = (input: any = {}) => {
+  const context = buildContext({
+    category: "mentoring",
+    action: "track",
+    bppId: input?.context?.bpp_id,
+    bppUri: input?.context?.bpp_uri,
+    transactionId: input?.context?.transactionId
+  });
+
+  const message = {
+    order_id: input?.message?.order_id
+  };
+  return { payload: { context, message } };
+};
+export const buildTrackResponse = (input: any = {}) => {
+  const response = input?.responses[0];
+  const {
+    transaction_id: transactionId,
+    message_id: messageId,
+    bpp_id: bppId,
+    bpp_uri: bppUri
+  }: any = response?.context ?? {};
+  const context = { transactionId, messageId, bppId, bppUri };
+  return { context, message: response?.message ?? {} };
+};
+
+export const buildSupportRequest = (input: any = {}) => {
+  const context = buildContext({
+    category: "mentoring",
+    action: "support",
+    bppId: input?.context?.bpp_id,
+    bppUri: input?.context?.bpp_uri,
+    transactionId: input?.context?.transactionId
+  });
+  const message = {
+    ref_id: input?.message?.ref_id
+  };
+  return { payload: { context, message } };
+};
+export const buildSupportResponse = (input: any = {}) => {
+  const response = input?.responses[0];
+  const {
+    transaction_id: transactionId,
+    message_id: messageId,
+    bpp_id: bppId,
+    bpp_uri: bppUri
+  }: any = response?.context ?? {};
+
+  const context = { transactionId, messageId, bppId, bppUri };
+  return { context, message: response?.message ?? {} };
+};
+
+export const buildRatingRequest = (input: any = {}) => {
+  const context = buildContext({
+    category: "mentoring",
+    action: "rating",
+    bppId: input?.context?.bpp_id,
+    bppUri: input?.context?.bpp_uri,
+    transactionId: input?.context?.transactionId
+  });
+  const message = {
+    id: input?.message?.id,
+    rating_category: input?.message?.rating_category,
+    value: input?.message?.value
+  };
+  return { payload: { context, message } };
+};
+
+export const buildRatingResponse = (input: any = {}) => {
+  const response = input?.responses[0];
+  const {
+    transaction_id: transactionId,
+    message_id: messageId,
+    bpp_id: bppId,
+    bpp_uri: bppUri
+  }: any = response?.context ?? {};
+  const context = { transactionId, messageId, bppId, bppUri };
+  return { data: { context, message: response?.message ?? {} } };
 };

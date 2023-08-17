@@ -11,7 +11,13 @@ import {
   buildStatusRequest,
   buildStatusResponse,
   buildCancelRequest,
-  buildCancelResponse
+  buildCancelResponse,
+  buildTrackRequest,
+  buildTrackResponse,
+  buildSupportRequest,
+  buildSupportResponse,
+  buildRatingRequest,
+  buildRatingResponse
 } from "./schema-build-helpers";
 import axiosInstance from "axios";
 import https from "https";
@@ -23,7 +29,7 @@ import statusMentorShipResponse from "./mocks/statusMentorShipResponse.json";
 import cancelMentorShipResponse from "./mocks/cancelMentorShipResponse.json";
 import initMentorShipResponse from "./mocks/initMentorShipResponse.json";
 
-const gatewayUrl = "https://dsep-protocol-client.becknprotocol.io";
+const gatewayUrl = process.env.GATEWAY_URL || "";
 const mentorshipNetwork = process.env.MENTORSHIP_NETWORK;
 const backendApiUrl = process.env.BACKEND_API_BASE_URL;
 
@@ -40,15 +46,37 @@ export const searchMentorShipService = async (body: any): Promise<any> => {
     let searchResponse: any = {};
     if (mentorshipNetwork !== "local") {
       const headers = { "Content-Type": "application/JSON" };
-      const searchRes = await axios.post(`${gatewayUrl}/search`, payload, { headers });
+      const searchRes = await axios.post(`${gatewayUrl}/search`, payload, {
+        headers
+      });
       const itemRes = await Promise.all([
-        optional?.user?.email ? axios.get(`${backendApiUrl}/user/item/saved/${optional.user.email}`, { headers }) : null,
-        optional?.user?.email ? axios.get(`${backendApiUrl}/user/item/applied/${optional.user.email}`, { headers }) : null
-      ]).then(res => res).catch(err => null);
+        optional?.user?.email
+          ? axios.get(
+              `${backendApiUrl}/user/item/saved/${optional.user.email}`,
+              { headers }
+            )
+          : null,
+        optional?.user?.email
+          ? axios.get(
+              `${backendApiUrl}/user/item/applied/${optional.user.email}`,
+              { headers }
+            )
+          : null
+      ])
+        .then((res) => res)
+        .catch((err) => null);
       const res = { searchRes, itemRes };
-      searchResponse = buildSearchResponse(searchRes, body, itemRes?.[0]?.data?.mentorship, itemRes?.[1]?.data?.mentorship);
+      searchResponse = buildSearchResponse(
+        searchRes,
+        body,
+        itemRes?.[0]?.data?.mentorship,
+        itemRes?.[1]?.data?.mentorship
+      );
     } else {
-      searchResponse = buildSearchResponse({ data: searchMentorShipResp }, body);
+      searchResponse = buildSearchResponse(
+        { data: searchMentorShipResp },
+        body
+      );
     }
 
     return searchResponse;
@@ -72,7 +100,10 @@ export const selectMentorshipService = async (body: any): Promise<any> => {
       );
       selectResponse = buildSelectResponse(res, body);
     } else {
-      selectResponse = buildSelectResponse({ data: selectMentorshipResp }, body);
+      selectResponse = buildSelectResponse(
+        { data: selectMentorshipResp },
+        body
+      );
     }
     return selectResponse;
   } catch (error: any) {
@@ -95,7 +126,10 @@ export const confirmMentorshipService = async (body: any): Promise<any> => {
       );
       confirmResponse = buildConfirmResponse(res, body);
     } else {
-      confirmResponse = buildConfirmResponse({ data: confirmMentorShipResponse }, body);
+      confirmResponse = buildConfirmResponse(
+        { data: confirmMentorShipResponse },
+        body
+      );
     }
     return confirmResponse;
   } catch (error) {
@@ -138,7 +172,10 @@ export const statusMentorshipService = async (body: any): Promise<any> => {
       );
       statusResponse = buildStatusResponse(res, body);
     } else {
-      statusResponse = buildStatusResponse({ data: statusMentorShipResponse }, body);
+      statusResponse = buildStatusResponse(
+        { data: statusMentorShipResponse },
+        body
+      );
     }
 
     return statusResponse;
@@ -166,6 +203,79 @@ export const cancelMentorshipService = async (body: any): Promise<any> => {
       cancelResponse = buildCancelResponse(cancelMentorShipResponse, body);
     }
     return { data: cancelResponse };
+  } catch (error) {
+    return { error: error, errorOccured: true };
+  }
+};
+
+export const trackMentorshipService = async (body: any): Promise<any> => {
+  try {
+    const trackRequest = buildTrackRequest(body);
+    console.log(JSON.stringify(trackRequest));
+
+    let trackResponse: any = {};
+
+    if (mentorshipNetwork !== "local") {
+      const headers = { "Content-Type": "application/JSON" };
+      let res = await axios.post(`${gatewayUrl}/track`, trackRequest.payload, {
+        headers
+      });
+      trackResponse = buildTrackResponse(res?.data);
+    } else {
+      trackResponse = buildTrackResponse(cancelMentorShipResponse);
+    }
+    return { data: trackResponse };
+  } catch (error) {
+    return { error: error, errorOccured: true };
+  }
+};
+
+export const ratingMentorshipService = async (body: any): Promise<any> => {
+  try {
+    const ratingRequest = buildRatingRequest(body);
+    console.log(JSON.stringify(ratingRequest));
+
+    let ratingResponse: any = {};
+
+    if (mentorshipNetwork !== "local") {
+      const headers = { "Content-Type": "application/JSON" };
+      let res = await axios.post(
+        `${gatewayUrl}/rating`,
+        ratingRequest.payload,
+        {
+          headers
+        }
+      );
+      ratingResponse = buildRatingResponse(res?.data);
+    } else {
+      ratingResponse = buildRatingResponse(cancelMentorShipResponse);
+    }
+    return { data: ratingResponse };
+  } catch (error: any) {
+    return { error: error, errorOccured: true };
+  }
+};
+export const supportMentorshipService = async (body: any): Promise<any> => {
+  try {
+    const supportRequest = buildSupportRequest(body);
+    console.log(JSON.stringify(supportRequest));
+
+    let supportResponse: any = {};
+
+    if (mentorshipNetwork !== "local") {
+      const headers = { "Content-Type": "application/JSON" };
+      let res = await axios.post(
+        `${gatewayUrl}/support`,
+        supportRequest.payload,
+        {
+          headers
+        }
+      );
+      supportResponse = buildSupportResponse(res?.data);
+    } else {
+      supportResponse = buildSupportResponse(cancelMentorShipResponse);
+    }
+    return { data: supportResponse };
   } catch (error) {
     return { error: error, errorOccured: true };
   }
