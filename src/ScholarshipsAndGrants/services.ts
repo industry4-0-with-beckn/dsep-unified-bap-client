@@ -19,7 +19,7 @@ import confirmScholarshipReponse from "./mocks/confirmScholarshipReponse.json";
 import statusScholarshipReponse from "./mocks/statusScholarshipReponse.json";
 import selectScholarshipResponse from "./mocks/selectScholarshipResponse.json";
 
-const gatewayUrl = "https://dsep-protocol-client.becknprotocol.io";
+const gatewayUrl = process.env.GATEWAY_URL || "";
 const scholarshipNetwork = process.env.SCHOLARSHIP_NETWORK;
 const backendApiUrl = process.env.BACKEND_API_BASE_URL;
 
@@ -37,11 +37,25 @@ export const searchScholarshipService = async (body: any): Promise<any> => {
     let searchResponse: any = {};
     if (scholarshipNetwork !== "local") {
       const headers = { "Content-Type": "application/JSON" };
-      const searchRes = await axios.post(`${gatewayUrl}/search`, payload, { headers });
+      const searchRes = await axios.post(`${gatewayUrl}/search`, payload, {
+        headers
+      });
       const itemRes = await Promise.all([
-        optional?.user?.email ? axios.get(`${backendApiUrl}/user/item/saved/${optional.user.email}`, { headers }) : null,
-        optional?.user?.email ? axios.get(`${backendApiUrl}/user/item/applied/${optional.user.email}`, { headers }) : null
-      ]).then(res => res).catch(err => null);
+        optional?.user?.email
+          ? axios.get(
+              `${backendApiUrl}/user/item/saved/${optional.user.email}`,
+              { headers }
+            )
+          : null,
+        optional?.user?.email
+          ? axios.get(
+              `${backendApiUrl}/user/item/applied/${optional.user.email}`,
+              { headers }
+            )
+          : null
+      ])
+        .then((res) => res)
+        .catch((err) => null);
       const res = { searchRes, itemRes };
       searchResponse = buildOnSearchMergedResponse(res, body);
     } else {
