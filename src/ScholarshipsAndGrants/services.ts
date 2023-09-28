@@ -37,9 +37,11 @@ export const searchScholarshipService = async (body: any): Promise<any> => {
     let searchResponse: any = {};
     if (scholarshipNetwork !== "local") {
       const headers = { "Content-Type": "application/JSON" };
+      console.log("Sending Request to " + `${gatewayUrl}/search`);
       const searchRes = await axios.post(`${gatewayUrl}/search`, payload, {
         headers
       });
+
       const itemRes = await Promise.all([
         optional?.user?.email
           ? axios.get(
