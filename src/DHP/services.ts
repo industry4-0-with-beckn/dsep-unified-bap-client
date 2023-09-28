@@ -1,4 +1,4 @@
-import { buildContext, buildSearchRequest } from "./schema_helper";
+import { buildSearchRequest, buildSearchResponse } from "./schema_helper";
 import axios from "axios";
 
 const gatewayUrl = process.env.GATEWAY_URL;
@@ -11,8 +11,10 @@ export const searchService = async (body: any) => {
     const searchRes = await axios.post(`${gatewayUrl}/search`, payload, {
       headers
     });
-    return { payload, searchRes: searchRes.data };
+    const { data } = buildSearchResponse(searchRes.data);
+    return { payload, data };
   } catch (error: any) {
     console.log(error);
+    return { errorOccured: true, error: error.message };
   }
 };

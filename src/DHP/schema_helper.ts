@@ -97,3 +97,100 @@ export const buildSearchRequest = (body: any) => {
     payload: { context, message: { intent } }
   };
 };
+
+export const buildSearchResponse = (response: any) => {
+  const bppResponse = response?.responses;
+  if (!bppResponse || !bppResponse.length) {
+    return { status: 200, data: [] };
+  }
+
+  const finalData = bppResponse.map((bpp: any) => {
+    const {
+      transaction_id: transactionId,
+      message_id: messageId,
+      bpp_id: bppId,
+      bpp_uri: bppUri
+    }: any = bpp?.context ?? {};
+
+    const context = { transactionId, messageId, bppId, bppUri };
+    const platformName = bpp?.message?.catalog?.descriptor?.name;
+    const providersArray = bpp?.message?.catalog?.providers ?? [];
+
+    const providers = providersArray?.map((provider: any) => {
+      return {
+        providerDetails: {
+          id: provider?.id,
+          name: provider?.descriptor?.name,
+          shortDescription: provider?.descriptor?.short_desc,
+          image: provider?.descriptor?.images[0]?.url ?? []
+        },
+        items: provider?.items?.map((item: any) => {
+          return {
+            itemDetails: {
+              id: item?.id,
+              name: item?.descriptor?.name,
+              code: item?.descriptor?.code,
+              shortDesc: item?.descriptor?.short_desc,
+              longDesc: item?.descriptor?.longDesc,
+              price: item?.price
+            },
+            categories: item?.category_ids?.map((categoryId: any) => {
+              const requiredCategory = provider?.categories?.find(
+                (category: any) => category?.id === categoryId
+              );
+              if (Object.keys(requiredCategory).length) {
+                return {
+                  id: requiredCategory?.id,
+                  name: requiredCategory?.descriptor?.name,
+                  code: requiredCategory?.descriptor?.code
+                };
+              }
+            }),
+            fullfillments: item?.fulfillment_ids.map((fullfillmentId: any) => {
+              const requiredFullfillment = provider?.fulfillments.find(
+                (fulfillment: any) => fulfillment?.id === fullfillmentId
+              );
+              return {
+                id: requiredFullfillment?.id,
+                type: requiredFullfillment?.type,
+                stops: requiredFullfillment?.stops,
+                ...(() =>
+                  requiredFullfillment?.agent
+                    ? {
+                        agentDetails: {
+                          id: requiredFullfillment?.agent?.person?.id,
+                          name: requiredFullfillment?.agent?.person?.name,
+                          gender: requiredFullfillment?.agent?.person?.gender,
+                          creds: requiredFullfillment?.agent?.person?.creds,
+                          languages:
+                            requiredFullfillment?.agent?.person?.languages,
+                          skills: requiredFullfillment?.agent?.person?.skills
+                        }
+                      }
+                    : {})(),
+
+                tracking: requiredFullfillment?.tracking
+              };
+            }),
+            quantity: item?.quantity,
+            tags: item?.tags,
+            ...() => {
+              item?.location_ids
+                ? {
+                    locations: item?.location_ids.map((locationId: any) => {
+                      const requiredLocation = provider?.locations.find(
+                        (location: any) => location?.id === locationId
+                      );
+                      return requiredLocation;
+                    })
+                  }
+                : {};
+            }
+          };
+        })
+      };
+    });
+    return { context, platformName, providers };
+  });
+  return { data: finalData };
+};

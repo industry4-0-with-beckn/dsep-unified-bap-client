@@ -5,7 +5,7 @@ export const search = async (
   res: Response,
   next: NextFunction
 ) => {
-  const data = await searchService(req?.body);
+  const { data } = await searchService(req?.body);
   return res.status(200).json(data);
 };
 
