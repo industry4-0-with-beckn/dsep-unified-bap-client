@@ -142,7 +142,7 @@ export const confirmScholarshipService = async (body: any): Promise<any> => {
       confirmResponse = buildConfirmResponse(res?.data, body);
     } else {
       confirmResponse = buildConfirmResponse(
-        { data: confirmScholarshipReponse },
+        confirmScholarshipReponse,
         body
       );
     }

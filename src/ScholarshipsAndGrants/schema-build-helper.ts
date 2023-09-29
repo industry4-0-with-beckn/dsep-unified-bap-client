@@ -917,6 +917,7 @@ export const buildConfirmResponse = (response: any = {}, input: any = {}) => {
   };
 
   return {
+    original: actualResponse,
     context,
     scholarshipApplicationId,
     scholarshipApplicationStatus,
