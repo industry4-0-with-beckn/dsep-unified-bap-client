@@ -336,7 +336,7 @@ export const buildConfirmResponse = (response: any = {}, body: any = {}) => {
     data: Object.keys(item?.xinput?.form?.data ?? {}).map((key: string) => { return { formInputKey: key, formInputValue: item?.xinput?.form?.data[key] }; })
   };
 
-  return { data: { context, applicationId, applicationState, course, courseDetails, applicantProfile, additionalFormUrl, additionalFormData } };
+  return { data: { original: input, context, applicationId, applicationState, course, courseDetails, applicantProfile, additionalFormUrl, additionalFormData } };
 };
 
 

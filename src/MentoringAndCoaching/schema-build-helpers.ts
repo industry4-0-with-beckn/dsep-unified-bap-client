@@ -414,7 +414,7 @@ export const buildConfirmResponse = (response: any = {}, body: any = {}) => {
     }
   };
 
-  return { data: { context, mentorshipApplicationId, mentorshipSession } };
+  return { data: { original: input, context, mentorshipApplicationId, mentorshipSession } };
 };
 
 export const buildStatusRequest = (input: any = {}) => {
