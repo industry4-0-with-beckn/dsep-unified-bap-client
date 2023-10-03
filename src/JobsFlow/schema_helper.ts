@@ -774,7 +774,7 @@ export const buildOnConfirmResponse = (response: any = {}) => {
 
   return {
     data: {
-      orginal: input,
+      original: input,
       context,
       applicationId,
       company,
