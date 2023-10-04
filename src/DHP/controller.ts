@@ -1,5 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { searchService } from "./services";
+import {
+  searchService,
+  initService,
+  confirmService,
+  statusService,
+  cancelService
+} from "./services";
 export const search = async (
   req: Request,
   res: Response,
@@ -18,7 +24,8 @@ export const select = async (
 };
 
 export const init = async (req: Request, res: Response, next: NextFunction) => {
-  return res.status(200).json({});
+  const { data } = await initService(req?.body);
+  return res.status(200).json(data);
 };
 
 export const confirm = async (
@@ -26,7 +33,8 @@ export const confirm = async (
   res: Response,
   next: NextFunction
 ) => {
-  return res.status(200).json({});
+  const { data } = await confirmService(req?.body);
+  return res.status(200).json(data);
 };
 
 export const status = async (
@@ -34,8 +42,19 @@ export const status = async (
   res: Response,
   next: NextFunction
 ) => {
-  return res.status(200).json({});
+  const { data } = await statusService(req?.body);
+  return res.status(200).json(data);
 };
+
+export const cancel = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { data } = await cancelService(req?.body);
+  return res.status(200).json(data);
+};
+
 export const track = async (
   req: Request,
   res: Response,

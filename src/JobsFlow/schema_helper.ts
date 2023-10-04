@@ -51,6 +51,7 @@ export const buildSearchRequest = (input: any = {}) => {
   }
 
   const message = { intent: intent };
+  console.log("message", message);
   return { payload: { context, message }, optional };
 };
 

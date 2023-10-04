@@ -16,7 +16,7 @@ interface IContextBuilderInput {
   timestamp?: string;
 }
 
-export const buildContext = (input: IContextBuilderInput) => {
+export const buildRequestContext = (input: IContextBuilderInput) => {
   const context = {
     domain: input?.domain,
     action: input?.action ?? "",
@@ -43,8 +43,18 @@ export const buildContext = (input: IContextBuilderInput) => {
   return context;
 };
 
+const buildResponseContext = (input: any) => {
+  const context = {
+    transactionId: input?.transaction_id,
+    messageId: input?.message_id,
+    bppId: input?.bpp_id,
+    bppUri: input?.bpp_uri
+  };
+  return context;
+};
+
 export const buildSearchRequest = (body: any) => {
-  const context = buildContext({
+  const context = buildRequestContext({
     domain: body?.context?.domain,
     action: "search"
   });
@@ -193,4 +203,667 @@ export const buildSearchResponse = (response: any) => {
     return { context, platformName, providers };
   });
   return { data: finalData };
+};
+
+export const buildInitRequest = (body: any) => {
+  const reqOrderDetails = body?.orderDetails || {};
+  let context = buildRequestContext({
+    domain: body?.context?.domain,
+    action: "init",
+    transactionId: body?.context?.transactionId,
+    messageId: body?.context?.messageId,
+    bppId: body?.context?.bppId,
+    bppUri: body?.context?.bppUri
+  });
+  let order: any = {};
+  if (reqOrderDetails?.providerId) {
+    order = {
+      ...order,
+      provider: {
+        id: reqOrderDetails?.providerId
+      }
+    };
+  }
+  if (reqOrderDetails?.items && reqOrderDetails?.items?.length) {
+    order = {
+      ...order,
+      items: reqOrderDetails?.items?.map((item: any) => ({
+        id: item?.id,
+        ...(() => {
+          if (item?.quantity) {
+            return { quantity: { selected: { measure: item?.quantity } } };
+          }
+        })()
+      }))
+    };
+  }
+  if (reqOrderDetails?.billingDetails) {
+    order = {
+      ...order,
+      billing: reqOrderDetails?.billingDetails
+    };
+  }
+  if (
+    reqOrderDetails?.fullfillmentDetails &&
+    reqOrderDetails?.fullfillmentDetails.length
+  ) {
+    order = {
+      ...order,
+      fulfillments: reqOrderDetails?.fullfillmentDetails.map(
+        (fulfillment: any) => {
+          let mappedFulfillment: any = {
+            id: fulfillment?.id
+          };
+          if (fulfillment?.customerDetails) {
+            mappedFulfillment = {
+              ...mappedFulfillment,
+              customer: {
+                person: fulfillment?.customerDetails?.person,
+                contact: fulfillment?.customerDetails?.contact
+              }
+            };
+          }
+          if (fulfillment?.stops && fulfillment?.stops?.length) {
+            mappedFulfillment = {
+              ...mappedFulfillment,
+              stops: fulfillment.stops.map((stop: any) => ({
+                type: stop?.type,
+                location: { gps: stop?.location }
+              }))
+            };
+          }
+
+          return mappedFulfillment;
+        }
+      )
+    };
+  }
+  if (reqOrderDetails?.docs && reqOrderDetails?.docs.length) {
+    order = {
+      ...order,
+      docs: reqOrderDetails.docs.map((doc: any) => ({
+        descriptor: {
+          code: doc?.code,
+          name: doc?.name,
+          short_desc: doc?.shortDesc
+        },
+        mime_type: doc?.mimeType,
+        url: doc?.url
+      }))
+    };
+  }
+  return {
+    payload: { context, message: { order } }
+  };
+};
+
+export const buildInitResponse = (body: any) => {
+  const { context = {}, message = {} } = body?.responses[0];
+  const respcontext = buildResponseContext(context);
+  let order: any = {};
+  if (message?.order?.provider) {
+    order = {
+      ...order,
+      providerDetails: {
+        id: message?.order?.provider?.id,
+        name: message?.order?.provider?.descriptor?.name,
+        shortDescription: message?.order?.provider?.descriptor?.short_desc,
+        image: message?.order?.provider?.descriptor?.images[0]?.url
+      }
+    };
+  }
+  if (message?.order?.items && message?.order?.items.length) {
+    let items: any[] = message?.order?.items?.map((item: any) => {
+      return {
+        itemDetails: {
+          id: item?.id,
+          code: item?.descriptor?.code,
+          name: item?.descriptor?.name,
+          shortDesc: item?.descriptor?.short_desc,
+          longDesc: item?.descriptor?.long_desc,
+          price: item?.price
+        },
+        ...(() => {
+          if (item?.quantity) {
+            return {
+              quantity: item?.quantity?.selected?.measure
+            };
+          }
+          return {};
+        })(),
+        xinput: item?.xinput,
+        ...(() => {
+          if (item?.fulfillment_ids?.length) {
+            return {
+              fulfillments: item?.fulfillment_ids.map((id: any) => {
+                const matchedFulfillment = message?.order?.fulfillments.find(
+                  (fulfillment: any) => fulfillment?.id === id
+                );
+                return {
+                  id: matchedFulfillment?.id,
+                  type: matchedFulfillment?.type,
+                  ...(() => {
+                    let nestedObj: any = {};
+                    if (matchedFulfillment?.stops) {
+                      nestedObj = {
+                        ...nestedObj,
+                        stops: matchedFulfillment?.stops.map((stop: any) => ({
+                          type: stop?.type,
+                          time: stop?.time?.timestamp,
+                          location: stop?.location?.gps
+                        }))
+                      };
+                    }
+                    if (matchedFulfillment?.state) {
+                      nestedObj = {
+                        ...nestedObj,
+                        state: matchedFulfillment?.state?.descriptor
+                      };
+                    }
+                    if (matchedFulfillment?.customer) {
+                      nestedObj = {
+                        ...nestedObj,
+                        customer: matchedFulfillment?.customer
+                      };
+                    }
+                    if (matchedFulfillment?.agent) {
+                      nestedObj = {
+                        ...nestedObj,
+                        agent: matchedFulfillment?.agent
+                      };
+                    }
+                    return nestedObj;
+                  })()
+                };
+              })
+            };
+          }
+          return {};
+        })()
+      };
+    });
+    order = {
+      ...order,
+      items
+    };
+  }
+  order = {
+    ...order,
+    quote: message?.order?.quote,
+    billing: message?.order?.billing,
+    payments: message?.order?.payments,
+    cancellationTerms: message?.order?.cancellation_terms
+  };
+  return { context: respcontext, orderDetails: order };
+};
+
+export const buildConfirmRequest = (body: any) => {
+  const { orderDetails } = body;
+  let context = buildRequestContext({
+    domain: body?.context?.domain,
+    action: "confirm",
+    transactionId: body?.context?.transactionId,
+    messageId: body?.context?.messageId,
+    bppId: body?.context?.bppId,
+    bppUri: body?.context?.bppUri
+  });
+  let order: any = {};
+  if (orderDetails?.providerId) {
+    order = {
+      ...order,
+      provider: {
+        id: orderDetails?.providerId
+      }
+    };
+  }
+  if (orderDetails?.items && orderDetails?.items?.length) {
+    order = {
+      ...order,
+      items: orderDetails?.items?.map((item: any) => ({
+        id: item?.id,
+        xinput: item?.xinput,
+        ...(() => {
+          if (item?.quantity) {
+            return { quantity: { selected: { measure: item?.quantity } } };
+          }
+        })()
+      }))
+    };
+  }
+  if (orderDetails?.billingDetails) {
+    order = {
+      ...order,
+      billing: orderDetails?.billingDetails
+    };
+  }
+  if (
+    orderDetails?.fullfillmentDetails &&
+    orderDetails?.fullfillmentDetails.length
+  ) {
+    order = {
+      ...order,
+      fulfillments: orderDetails?.fullfillmentDetails.map(
+        (fulfillment: any) => {
+          let mappedFulfillment: any = {
+            id: fulfillment?.id
+          };
+          if (fulfillment?.customerDetails) {
+            mappedFulfillment = {
+              ...mappedFulfillment,
+              customer: {
+                person: fulfillment?.customerDetails?.person,
+                contact: fulfillment?.customerDetails?.contact
+              }
+            };
+          }
+          if (fulfillment?.stops && fulfillment?.stops?.length) {
+            mappedFulfillment = {
+              ...mappedFulfillment,
+              stops: fulfillment.stops.map((stop: any) => ({
+                type: stop?.type,
+                location: { gps: stop?.location }
+              }))
+            };
+          }
+
+          return mappedFulfillment;
+        }
+      )
+    };
+  }
+  if (orderDetails?.docs && orderDetails?.docs.length) {
+    order = {
+      ...order,
+      docs: orderDetails.docs.map((doc: any) => ({
+        descriptor: {
+          code: doc?.code,
+          name: doc?.name,
+          short_desc: doc?.shortDesc
+        },
+        mime_type: doc?.mimeType,
+        url: doc?.url
+      }))
+    };
+  }
+  if (orderDetails?.payments) {
+    order = {
+      ...order,
+      payments: orderDetails?.payments
+    };
+  }
+  if (orderDetails?.payments) {
+    order = {
+      ...order,
+      payments: orderDetails?.payments
+    };
+  }
+  return {
+    payload: { context, message: { order } }
+  };
+};
+
+export const buildConfirmResponse = (body: any) => {
+  const { context = {}, message = {} } = body?.responses[0];
+  const respcontext = buildResponseContext(context);
+  let order: any = {
+    orderId: message?.order?.id
+  };
+  if (message?.order?.provider) {
+    order = {
+      ...order,
+      providerDetails: {
+        id: message?.order?.provider?.id,
+        name: message?.order?.provider?.descriptor?.name,
+        shortDescription: message?.order?.provider?.descriptor?.short_desc,
+        image: message?.order?.provider?.descriptor?.images[0]?.url
+      }
+    };
+  }
+  if (message?.order?.items && message?.order?.items.length) {
+    let items: any[] = message?.order?.items?.map((item: any) => {
+      return {
+        itemDetails: {
+          id: item?.id,
+          code: item?.descriptor?.code,
+          name: item?.descriptor?.name,
+          shortDesc: item?.descriptor?.short_desc,
+          longDesc: item?.descriptor?.long_desc,
+          price: item?.price
+        },
+        ...(() => {
+          if (item?.quantity) {
+            return {
+              quantity: item?.quantity?.selected?.measure
+            };
+          }
+          return {};
+        })(),
+        xinput: item?.xinput,
+        ...(() => {
+          if (item?.fulfillment_ids?.length) {
+            return {
+              fulfillments: item?.fulfillment_ids.map((id: any) => {
+                const matchedFulfillment = message?.order?.fulfillments.find(
+                  (fulfillment: any) => fulfillment?.id === id
+                );
+                return {
+                  id: matchedFulfillment?.id,
+                  type: matchedFulfillment?.type,
+                  ...(() => {
+                    let nestedObj: any = {};
+                    if (matchedFulfillment?.stops) {
+                      nestedObj = {
+                        ...nestedObj,
+                        stops: matchedFulfillment?.stops.map((stop: any) => ({
+                          type: stop?.type,
+                          time: stop?.time?.timestamp,
+                          location: stop?.location?.gps
+                        }))
+                      };
+                    }
+                    if (matchedFulfillment?.state) {
+                      nestedObj = {
+                        ...nestedObj,
+                        state: matchedFulfillment?.state?.descriptor
+                      };
+                    }
+                    if (matchedFulfillment?.customer) {
+                      nestedObj = {
+                        ...nestedObj,
+                        customer: matchedFulfillment?.customer
+                      };
+                    }
+                    if (matchedFulfillment?.agent) {
+                      nestedObj = {
+                        ...nestedObj,
+                        agent: matchedFulfillment?.agent
+                      };
+                    }
+                    return nestedObj;
+                  })()
+                };
+              })
+            };
+          }
+          return {};
+        })()
+      };
+    });
+    order = {
+      ...order,
+      items
+    };
+  }
+  order = {
+    ...order,
+    quote: message?.order?.quote,
+    billing: message?.order?.billing,
+    payments: message?.order?.payments,
+    cancellationTerms: message?.order?.cancellation_terms
+  };
+  return { context: respcontext, orderDetails: order };
+};
+
+export const buildStatusRequest = (body: any) => {
+  const { orderDetails } = body;
+  let context = buildRequestContext({
+    domain: body?.context?.domain,
+    action: "status",
+    transactionId: body?.context?.transactionId,
+    messageId: body?.context?.messageId,
+    bppId: body?.context?.bppId,
+    bppUri: body?.context?.bppUri
+  });
+
+  return {
+    payload: { context, message: { order_id: orderDetails?.orderId } }
+  };
+};
+
+export const buildStatusResponse = (body: any) => {
+  const { context = {}, message = {} } = body?.responses[0];
+  const respcontext = buildResponseContext(context);
+  let order: any = {
+    orderId: message?.order?.id
+  };
+  if (message?.order?.provider) {
+    order = {
+      ...order,
+      providerDetails: {
+        id: message?.order?.provider?.id,
+        name: message?.order?.provider?.descriptor?.name,
+        shortDescription: message?.order?.provider?.descriptor?.short_desc,
+        image: message?.order?.provider?.descriptor?.images[0]?.url
+      }
+    };
+  }
+  if (message?.order?.items && message?.order?.items.length) {
+    let items: any[] = message?.order?.items?.map((item: any) => {
+      return {
+        itemDetails: {
+          id: item?.id,
+          code: item?.descriptor?.code,
+          name: item?.descriptor?.name,
+          shortDesc: item?.descriptor?.short_desc,
+          longDesc: item?.descriptor?.long_desc,
+          price: item?.price
+        },
+        ...(() => {
+          if (item?.quantity) {
+            return {
+              quantity: item?.quantity?.selected?.measure
+            };
+          }
+          return {};
+        })(),
+        xinput: item?.xinput,
+        ...(() => {
+          if (item?.fulfillment_ids?.length) {
+            return {
+              fulfillments: item?.fulfillment_ids.map((id: any) => {
+                const matchedFulfillment = message?.order?.fulfillments.find(
+                  (fulfillment: any) => fulfillment?.id === id
+                );
+                return {
+                  id: matchedFulfillment?.id,
+                  type: matchedFulfillment?.type,
+                  ...(() => {
+                    let nestedObj: any = {};
+                    if (matchedFulfillment?.stops) {
+                      nestedObj = {
+                        ...nestedObj,
+                        stops: matchedFulfillment?.stops.map((stop: any) => ({
+                          type: stop?.type,
+                          time: stop?.time?.timestamp,
+                          location: stop?.location?.gps
+                        }))
+                      };
+                    }
+                    if (matchedFulfillment?.state) {
+                      nestedObj = {
+                        ...nestedObj,
+                        state: matchedFulfillment?.state?.descriptor
+                      };
+                    }
+                    if (matchedFulfillment?.customer) {
+                      nestedObj = {
+                        ...nestedObj,
+                        customer: matchedFulfillment?.customer
+                      };
+                    }
+                    if (matchedFulfillment?.agent) {
+                      nestedObj = {
+                        ...nestedObj,
+                        agent: matchedFulfillment?.agent
+                      };
+                    }
+                    return nestedObj;
+                  })()
+                };
+              })
+            };
+          }
+          return {};
+        })()
+      };
+    });
+    order = {
+      ...order,
+      items
+    };
+  }
+  order = {
+    ...order,
+    quote: message?.order?.quote,
+    billing: message?.order?.billing,
+    payments: message?.order?.payments,
+    cancellationTerms: message?.order?.cancellation_terms
+  };
+  return { context: respcontext, order };
+};
+
+export const buildCancelRequest = (body: any) => {
+  const { orderDetails = {}, cancellationDetails = {} } = body;
+  let message: any = {};
+  let context = buildRequestContext({
+    domain: body?.context?.domain,
+    action: "cancel",
+    transactionId: body?.context?.transactionId,
+    messageId: body?.context?.messageId,
+    bppId: body?.context?.bppId,
+    bppUri: body?.context?.bppUri
+  });
+
+  if (orderDetails?.orderId) {
+    message = { ...message, order_id: orderDetails?.orderId };
+  }
+  if (cancellationDetails?.cancellationReasonId) {
+    message = {
+      ...message,
+      cancellation_reason_id: cancellationDetails?.cancellationReasonId
+    };
+  }
+  if (
+    cancellationDetails?.description &&
+    Object.keys(cancellationDetails?.description).length
+  ) {
+    message = {
+      ...message,
+      descriptor: {
+        short_desc: cancellationDetails?.description?.shortDesc,
+        long_desc: cancellationDetails?.description?.longDesc
+      }
+    };
+  }
+  return {
+    payload: { context, message }
+  };
+};
+
+export const buildCancelResponse = (body: any) => {
+  const { context = {}, message = {} } = body?.responses[0];
+  const respcontext = buildResponseContext(context);
+  let orderDetails: any = {
+    orderId: message?.order?.id
+  };
+  if (message?.order?.provider) {
+    orderDetails = {
+      ...orderDetails,
+      providerDetails: {
+        id: message?.order?.provider?.id,
+        name: message?.order?.provider?.descriptor?.name,
+        shortDescription: message?.order?.provider?.descriptor?.short_desc,
+        image: message?.order?.provider?.descriptor?.images[0]?.url
+      }
+    };
+  }
+  if (message?.order?.status) {
+    orderDetails = {
+      ...orderDetails,
+      status: message?.order?.status
+    };
+  }
+  if (message?.order?.items && message?.order?.items.length) {
+    let items: any[] = message?.order?.items?.map((item: any) => {
+      return {
+        itemDetails: {
+          id: item?.id,
+          code: item?.descriptor?.code,
+          name: item?.descriptor?.name,
+          shortDesc: item?.descriptor?.short_desc,
+          longDesc: item?.descriptor?.long_desc,
+          price: item?.price
+        },
+        ...(() => {
+          if (item?.quantity) {
+            return {
+              quantity: item?.quantity?.selected?.measure
+            };
+          }
+          return {};
+        })(),
+        xinput: item?.xinput,
+        ...(() => {
+          if (item?.fulfillment_ids?.length) {
+            return {
+              fulfillments: item?.fulfillment_ids.map((id: any) => {
+                const matchedFulfillment = message?.order?.fulfillments.find(
+                  (fulfillment: any) => fulfillment?.id === id
+                );
+                return {
+                  id: matchedFulfillment?.id,
+                  type: matchedFulfillment?.type,
+                  ...(() => {
+                    let nestedObj: any = {};
+                    if (matchedFulfillment?.stops) {
+                      nestedObj = {
+                        ...nestedObj,
+                        stops: matchedFulfillment?.stops.map((stop: any) => ({
+                          type: stop?.type,
+                          time: stop?.time?.timestamp,
+                          location: stop?.location?.gps
+                        }))
+                      };
+                    }
+                    if (matchedFulfillment?.state) {
+                      nestedObj = {
+                        ...nestedObj,
+                        state: matchedFulfillment?.state?.descriptor
+                      };
+                    }
+                    if (matchedFulfillment?.customer) {
+                      nestedObj = {
+                        ...nestedObj,
+                        customer: matchedFulfillment?.customer
+                      };
+                    }
+                    if (matchedFulfillment?.agent) {
+                      nestedObj = {
+                        ...nestedObj,
+                        agent: matchedFulfillment?.agent
+                      };
+                    }
+                    return nestedObj;
+                  })()
+                };
+              })
+            };
+          }
+          return {};
+        })()
+      };
+    });
+    orderDetails = {
+      ...orderDetails,
+      items
+    };
+  }
+  orderDetails = {
+    ...orderDetails,
+    quote: message?.order?.quote,
+    billing: message?.order?.billing,
+    payments: message?.order?.payments,
+    cancellationTerms: message?.order?.cancellation_terms
+  };
+  return { context: respcontext, orderDetails };
 };
