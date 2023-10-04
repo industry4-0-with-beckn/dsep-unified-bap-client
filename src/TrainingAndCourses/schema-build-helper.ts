@@ -5,8 +5,7 @@ export const buildContext = (input: any = {}) => {
   const context: ITrainingNetworkContext = {
     transaction_id: input?.transactionId ?? uuid(),
     domain: `${process.env.DOMAIN}${input?.category ?? "courses"}`,
-    country: process.env.COUNTRY || (input?.country ?? ""),
-    city: process.env.CITY || (input?.city ?? ""),
+    location: { city: { name: process.env.CITY || (input?.city ?? ""), code: process.env.CITY_CODE || (input?.cityCode ?? "") }, country: { name: process.env.COUNTRY || (input?.country ?? ""), code: process.env.COUNTRY_CODE || (input?.countryCode ?? "") } },
     action: input.action ?? "",
     version: `${process.env.CORE_VERSION || (input?.core_version ?? "")}`,
     bap_id: process.env.BAP_ID || (input?.bapId ?? ""),
@@ -93,43 +92,50 @@ export const buildOnSearchMergedResponse = async (response: any = {}, body: any 
 }
 
 export const buildSearchResponse = (response: any = {}, body: any = {}, savedItems = [], appliedItems = []) => {
-  const input = response?.data?.responses?.[0];
-  if (!input)
-    return { status: 200 };
-  const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = input?.context ?? {};
+  const inputs = response?.data?.responses;
+
+  const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = inputs?.[0]?.context ?? {};
   const context = { transactionId, messageId, bppId, bppUri };
 
+  if (!inputs?.length)
+    return { status: 200 };
+
   const courses: any[] = [];
+  inputs.map((input: any) => {
+    const { bpp_id: bppId, bpp_uri: bppUri }: any = input?.context ?? {};
+    const context = { bppId, bppUri };
 
-  const providers = input?.message?.catalog?.providers;
+    const providers = input?.message?.catalog?.providers;
 
-  providers?.forEach((provider: any) => {
-    provider?.items.forEach((item: any) => {
-      const categoryFound: any = provider?.categories.find(
-        (category: any) => category?.id === item.category_id
-      );
-      courses.push({
-        id: item?.id,
-        name: item?.descriptor?.name,
-        description: item?.descriptor?.long_desc,
-        userSavedItem: !!(savedItems?.find((savedItem: any) => savedItem?.course_id == item?.id)),
-        userAppliedItem: !!(appliedItems?.find((appliedItem: any) => appliedItem?.course_id == item?.id)),
-        imageLocations: item?.descriptor?.images.map(
-          (img: any) => img?.url || ""
-        ),
-        duration: item?.time?.duration,
-        provider: {
-          id: provider?.id,
-          name: provider?.descriptor?.name,
-          description: provider?.descriptor?.name
-        },
-        category: {
-          id: categoryFound ? categoryFound?.id : "",
-          name: categoryFound ? categoryFound?.descriptor?.name : ""
-        }
+    providers?.forEach((provider: any) => {
+      provider?.items.forEach((item: any) => {
+        const categoryFound: any = provider?.categories.find(
+          (category: any) => category?.id === item.category_id
+        );
+        courses.push({
+          id: item?.id,
+          name: item?.descriptor?.name,
+          description: item?.descriptor?.long_desc,
+          userSavedItem: !!(savedItems?.find((savedItem: any) => savedItem?.course_id == item?.id)),
+          userAppliedItem: !!(appliedItems?.find((appliedItem: any) => appliedItem?.course_id == item?.id)),
+          imageLocations: item?.descriptor?.images.map(
+            (img: any) => img?.url || ""
+          ),
+          duration: item?.time?.duration,
+          provider: {
+            id: provider?.id,
+            name: provider?.descriptor?.name,
+            description: provider?.descriptor?.name
+          },
+          category: {
+            id: categoryFound ? categoryFound?.id : "",
+            name: categoryFound ? categoryFound?.descriptor?.name : ""
+          },
+          context
+        });
       });
     });
-  });
+  })
   return { data: { context, courses } };
 };
 
