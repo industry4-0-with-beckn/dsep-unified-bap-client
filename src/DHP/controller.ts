@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from "express";
+import { selectSchema } from "../helper/api-validator";
+
 import {
   searchService,
+  selectService,
   initService,
   confirmService,
   statusService,
@@ -20,9 +23,22 @@ export const select = async (
   res: Response,
   next: NextFunction
 ) => {
-  return res.status(200).json({});
-};
-
+  try {
+    const { error } = selectSchema.validate(req?.body);
+    console.log("Joi Error == ", error);
+    if (error) {
+      return res.status(400).json({ error: error?.details[0]?.message || "Bad Request." });
+    } else{
+      const data = await selectService(req?.body);
+      return res.status(200).json(data);
+    }
+  } catch(error: any) {
+    return res.status(error?.response?.status || 500).json({ 
+      error: error?.response?.statusText || "An exception has occurred."
+    });
+  }
+  
+}
 export const init = async (req: Request, res: Response, next: NextFunction) => {
   const { data } = await initService(req?.body);
   return res.status(200).json(data);

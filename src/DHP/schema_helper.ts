@@ -205,6 +205,198 @@ export const buildSearchResponse = (response: any) => {
   return { data: finalData };
 };
 
+export const buildSelectRequest = (body: any) => {
+  const context = buildRequestContext({
+    domain: body?.context?.domain,
+    action: "select",
+    transactionId: body?.context?.transactionId,
+    messageId: body?.context?.messageId,
+    bppId: body?.context?.bppId,
+    bppUri: body?.context?.bppUri
+  });
+
+  const message = {
+    order: {
+      provider: { id: body?.providerId },
+      items: body?.items
+    }
+  };
+
+  return {
+    payload: { context, message }
+  };
+};
+
+export const buildSelectResponse = (body: any) => {
+  const { context = {}, message = {} } = body?.responses[0];
+  // const bppResponse = response?.responses?.[0];
+  // console.log("bppResponse => ", bppResponse);
+  // if (!bppResponse) {
+  //   return { status: 200, data: [] };
+  // }
+
+  const respcontext = buildResponseContext(context);
+  let order: any = {};
+
+  if (message?.order?.provider) {
+    order = {
+      ...order,
+      providerDetails: {
+        id: message?.order?.provider?.id,
+        name: message?.order?.provider?.descriptor?.name,
+        shortDescription: message?.order?.provider?.descriptor?.short_desc,
+        image: message?.order?.provider?.descriptor?.images?.map((image: any) => ({
+          url: image?.url,
+          size: image?.size_type
+        }))
+      }
+    };
+  }
+
+  if (message?.order?.items && message?.order?.items.length) {
+    let items: any[] = message?.order?.items?.map((item: any) => {
+      return {
+        itemDetails: {
+          id: item?.id,
+          code: item?.descriptor?.code,
+          name: item?.descriptor?.name,
+          shortDesc: item?.descriptor?.short_desc,
+          longDesc: item?.descriptor?.long_desc,
+          price: item?.price
+        },
+        ...(() => {
+          if (item?.quantity) {
+            return {
+              quantity: item?.quantity?.selected?.measure
+            };
+          }
+          return {};
+        })(),
+        xinput: item?.xinput,
+        ...(() => {
+          if (item?.fulfillment_ids?.length) {
+            return {
+              fulfillments: item?.fulfillment_ids.map((id: any) => {
+                const matchedFulfillment = message?.order?.fulfillments.find(
+                  (fulfillment: any) => fulfillment?.id === id
+                );
+                return {
+                  id: matchedFulfillment?.id,
+                  type: matchedFulfillment?.type,
+                  tracking: matchedFulfillment?.tracking,
+                  ...(() => {
+                    let nestedObj: any = {};
+                    if (matchedFulfillment?.stops) {
+                      nestedObj = {
+                        ...nestedObj,
+                        stops: matchedFulfillment?.stops.map((stop: any) => ({
+                          type: stop?.type,
+                          time: stop?.time?.timestamp,
+                          location: stop?.location?.gps
+                        }))
+                      };
+                    }
+                    if (matchedFulfillment?.state) {
+                      nestedObj = {
+                        ...nestedObj,
+                        state: matchedFulfillment?.state?.descriptor
+                      };
+                    }
+                    if (matchedFulfillment?.customer) {
+                      nestedObj = {
+                        ...nestedObj,
+                        customer: matchedFulfillment?.customer
+                      };
+                    }
+                    if (matchedFulfillment?.agent) {
+                      nestedObj = {
+                        ...nestedObj,
+                        agent: matchedFulfillment?.agent
+                      };
+                    }
+                    return nestedObj;
+                  })()
+                };
+              })
+            };
+          }
+          return {};
+        })()
+      };
+    });
+    order = {
+      ...order,
+      items
+    };
+  }
+  // const {
+  //   transaction_id: transactionId,
+  //   message_id: messageId,
+  //   bpp_id: bppId,
+  //   bpp_uri: bppUri
+  // }: any = response?.context ?? {};
+
+  // const context = { transactionId, messageId, bppId, bppUri };
+  // const provider = bppResponse?.message?.order?.provider;
+  // const items = bppResponse?.message?.order?.items;
+  // const provider = {
+  //   providerDetails: {
+  //     id: bppResponse?.message?.order?.provider?.id,
+  //     name: bppResponse?.message?.order?.provider?.descriptor?.name,
+  //     shortDescription: bppResponse?.message?.order?.provider?.descriptor?.short_desc,
+  //     images: bppResponse?.message?.order?.provider?.descriptor?.images?.map((image: any) => ({
+  //       url: image?.url,
+  //       size: image?.size_type
+  //     }))
+  //   },
+  //   items: bppResponse?.message?.order?.items.map((ele: any) => {
+  //     return {
+  //       itemDetails: {
+  //         id: ele?.id,
+  //         name: ele?.descriptor?.name,
+  //         code: ele?.descriptor?.code,
+  //         longDesc: ele?.descriptor?.long_desc,
+  //         shortDesc: ele?.descriptor?.short_desc,
+  //         additionalDesc: {
+  //           url: ele?.descriptor?.additional_desc?.url,
+  //           contentType: ele?.descriptor?.additional_desc?.content_type
+  //         },
+  //         price: ele?.price,
+  //       },
+  //       fulfillments: bppResponse?.message?.order?.fulfillments
+  //       ?.filter((fulfillment: any) =>
+  //         ele?.fulfillment_ids?.find(
+  //           (fulfillmentId: any) => fulfillment?.id == fulfillmentId
+  //         )
+  //       )
+  //       ?.map((fulfillment: any) => {
+  //         return {
+  //           id: fulfillment?.id,
+  //           type: fulfillment?.type,
+  //           agentDetails: fulfillment?.agent?.person,
+  //           tracking: fulfillment?.tracking,
+  //           stops: fulfillment?.stops.map((ele: any) => {
+  //             return {
+  //               type: ele?.type,
+  //               time: ele?.time?.timestamp,
+  //               location: ele?.location?.gps
+  //             }
+  //           })
+  //         }
+  //       })
+  //     }
+  //   }),
+  //   quote: bppResponse?.message?.order?.quote
+  // };
+
+  // return { data: { context, provider } };
+  order = {
+    ...order,
+    quote: message?.order?.quote
+  };
+  return { context: respcontext, orderDetails: order };
+}
+
 export const buildInitRequest = (body: any) => {
   const reqOrderDetails = body?.orderDetails || {};
   let context = buildRequestContext({

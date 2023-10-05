@@ -1,6 +1,8 @@
 import {
   buildSearchRequest,
   buildSearchResponse,
+  buildSelectRequest,
+  buildSelectResponse,
   buildInitRequest,
   buildInitResponse,
   buildConfirmRequest,
@@ -30,6 +32,26 @@ export const searchService = async (body: any) => {
   }
 };
 
+export const selectService = async (body: any) => {
+  try {
+    const { payload } = buildSelectRequest(body);
+    console.log("Payload for Select :==>", JSON.stringify(payload));
+    const headers = { "Content-Type": "application/JSON" };
+
+    const selectRes = await axios.post(`${gatewayUrl}/select`, payload, {
+      headers
+    });
+    // console.log("selectRes => ", selectRes.data);
+    const { context, orderDetails } = buildSelectResponse(selectRes.data);
+    return { data: { context, orderDetails }, errorOccured: false };
+  } catch (error: any) {
+    console.log(error);
+    return {
+      status: error?.response?.status || 500,
+      message: error?.response?.statusText || "An exception has occurred."
+    }
+  }
+};
 export const initService = async (body: any) => {
   try {
     const { payload } = buildInitRequest(body);
