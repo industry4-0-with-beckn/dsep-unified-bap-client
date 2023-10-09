@@ -32,7 +32,7 @@ export const buildContext = (input: any = {}) => {
 export const buildSearchRequest = (input: any = {}) => {
   const context = buildContext({ action: "search", category: "scholarships" });
   const message: any = {
-    intent: { item: {}, provider: {} }
+    intent: {}
   };
   const optional: any = {};
 
@@ -90,11 +90,12 @@ export const buildSearchRequest = (input: any = {}) => {
     optional.user = { email: input?.loggedInUserEmail };
   }
 
-  message.intent.provider = {
-    categories: input?.categories?.map((category: any) => ({
-      descriptor: { code: category?.code }
-    }))
-  };
+  if (input?.categories?.length)
+    message.intent.provider = {
+      categories: input?.categories?.map((category: any) => ({
+        descriptor: { code: category?.code }
+      }))
+    };
 
   if (Object.keys(fulfillment?.customer?.person ?? {})?.length) {
     message.intent.fulfillment = fulfillment;
