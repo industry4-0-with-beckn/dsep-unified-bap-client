@@ -7,7 +7,10 @@ import {
   initService,
   confirmService,
   statusService,
-  cancelService
+  cancelService,
+  supportService,
+  ratingService,
+  trackService
 } from "./services";
 export const search = async (
   req: Request,
@@ -76,12 +79,23 @@ export const track = async (
   res: Response,
   next: NextFunction
 ) => {
-  return res.status(200).json({});
+  const { data } = await trackService(req?.body);
+  return res.status(200).json(data);
 };
 export const support = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  return res.status(200).json({});
+  const { data } = await supportService(req?.body);
+  return res.status(200).json(data);
+};
+
+export const rating = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { data } = await ratingService(req?.body);
+  return res.status(200).json(data);
 };

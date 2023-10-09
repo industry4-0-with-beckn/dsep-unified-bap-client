@@ -7,7 +7,8 @@ import {
   status,
   track,
   support,
-  cancel
+  cancel,
+  rating
 } from "./controller";
 const router: Router = express.Router();
 
@@ -20,6 +21,7 @@ export const DHProutes = () => {
   router.post("/cancel", cancel);
   router.post("/track", track);
   router.post("/support", support);
+  router.post("/rating", rating);
 
   return router;
 };
