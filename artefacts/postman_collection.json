@@ -1,0 +1,602 @@
+{
+	"info": {
+		"_postman_id": "72e26c81-23e9-4189-bd38-67c097cb814e",
+		"name": "DHP CL",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "30080766"
+	},
+	"item": [
+		{
+			"name": "Consultation",
+			"item": [
+				{
+					"name": "Search",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"domain\": \"dhp:consultation:0.1.0\"\n    },\n    \"searchString\": \"orthopedic sergion\",\n    \"categoryName\": \"sergion\",\n    \"categoryId\": \"1\",\n    \"provider\": {\n        \"providerId\": \"289edce4-d002-4962-b311-4c025e22b4f6\",\n        \"providerCode\": \"2\",\n        \"providerName\": \"Some Provider Name\"\n    },\n    \"location\": {\n        \"gps\": \"12.423423,77.325647\",\n        \"radius\": {\n            \"type\": \"CONSTANT\",\n            \"value\": \"5\",\n            \"unit\": \"km\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/search"
+					},
+					"response": []
+				},
+				{
+					"name": "Select",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:consultation:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"providerId\": \"289edce4-d002-4962-b311-4c025e22b4f6\",\n        \"items\": [\n            {\n                \"id\": \"cons-01\"\n            },\n            {\n                \"id\": \"cons-02\"\n            }\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/select"
+					},
+					"response": []
+				},
+				{
+					"name": "Init",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:consultation:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"providerId\": \"289edce4-d002-4962-b311-4c025e22b4f6\",\n        \"items\": [\n            {\n                \"id\": \"cons-01\"\n            },\n            {\n                \"id\": \"cons-02\"\n            }\n        ],\n        \"billingDetails\": {\n            \"name\": \"Rajesh Kumar\",\n            \"address\": \"Villa 5, Green Valley, Malleshwaram, 560012\",\n            \"email\": \"rajesh.kumar@example.com\",\n            \"phone\": \"+91-9999999999\"\n        },\n        \"fullfillmentDetails\": [\n            {\n                \"id\": \"ful-01\",\n                \"customerDetails\": {\n                    \"person\": {\n                        \"name\": \"Rajesh Kumar\",\n                        \"age\": \"26\",\n                        \"gender\": \"M\",\n                        \"dob\": \"1995-09-11\"\n                    }\n                }\n            }\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/init"
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:consultation:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"providerId\": \"289edce4-d002-4962-b311-4c025e22b4f6\",\n        \"items\": [\n            {\n                \"id\": \"cons-01\",\n                \"xinput\": {\n                    \"form_response\": {\n                        \"status\": true,\n                        \"submission_id\": \"c844d5f4-29c3-4398-b594-8b4716ef5dbf\"\n                    }\n                }\n            },\n            {\n                \"id\": \"cons-02\",\n                \"xinput\": {\n                    \"form_response\": {\n                        \"status\": true,\n                        \"submission_id\": \"c844d5f4-29c3-4398-b594-8b4716ef5dbf\"\n                    }\n                }\n            }\n        ],\n        \"billingDetails\": {\n            \"name\": \"Rajesh Kumar\",\n            \"address\": \"Villa 5, Green Valley, Malleshwaram, 560012\",\n            \"email\": \"rajesh.kumar@example.com\",\n            \"phone\": \"+91-9999999999\"\n        },\n        \"fullfillmentDetails\": [\n            {\n                \"id\": \"ful-01\",\n                \"customerDetails\": {\n                    \"person\": {\n                        \"name\": \"Rajesh Kumar\",\n                        \"age\": \"26\",\n                        \"gender\": \"M\",\n                        \"dob\": \"1995-09-11\"\n                    }\n                }\n            }\n        ],\n        \"payments\": [\n            {\n                \"type\": \"ON-FULFILLMENT\",\n                \"status\": \"NOT-PAID\",\n                \"params\": {\n                    \"amount\": \"350\",\n                    \"currency\": \"INR\"\n                }\n            }\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/confirm"
+					},
+					"response": []
+				},
+				{
+					"name": "Status",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:consultation:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"orderId\": \"759b905c-5a30-4d18-a6af-0decbac9282f\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/status"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:consultation:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"orderId\": \"759b905c-5a30-4d18-a6af-0decbac9282f\"\n    },\n    \"cancellationDetails\": {\n        \"cancellationReasonId\": \"4\",\n        \"description\": {\n            \"shortDesc\": \"Change in Doctor's Recommendation\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/cancel"
+					},
+					"response": []
+				},
+				{
+					"name": "Support",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:consultation:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"orderId\": \"759b905c-5a30-4d18-a6af-0decbac9282f\"\n    },\n    \"contactDetails\": {\n        \"phone\": \"+919876543210\",\n        \"email\": \"john.doe@gmail.com\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/support"
+					},
+					"response": []
+				},
+				{
+					"name": "Rating",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:consultation:0.1.0\"\n    },\n    \"ratingDetails\": [\n        {\n            \"id\": \"a9aaecca-10b7-4d19-b640-b047a7c621961676906777032\",\n            \"ratingCategory\": \"Item\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/rating"
+					},
+					"response": []
+				},
+				{
+					"name": "Track",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:consultation:0.1.0\"\n    },\n    \"orderDetails\":{\n        \"orderId\":\"853c7593-f4bf-4557-8832-118a591787ba\"\n    },\n    \"callbackURL\":\"https://dhp-network-bap.becknprotocol.io/track/callback\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/track"
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:consultation:0.1.0\"\n    },\n    \"orderDetails\":{\n        \"orderId\":\"853c7593-f4bf-4557-8832-118a591787ba\",\n        \"update_target\":\"order.billing\",\n        \"billingDetails\": {\n            \"name\": \"Rajesh Kumar\",\n            \"address\": \"Villa 5, Green Valley, Malleshwaram, 560012\",\n            \"email\": \"rajesh.kumar@example.com\",\n            \"phone\": \"+91-9999999999\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/update"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pharmacy",
+			"item": [
+				{
+					"name": "Search",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"domain\": \"dhp:pharmacy:0.1.0\"\n    },\n    \"searchString\": \"paracetamol\",\n    \"categoryName\": \"medicine\",\n    \"categoryId\": \"2\",\n    \"provider\": {\n        \"providerId\": \"289edce4-d002-4962-b311-4c025e22b4f6\",\n        \"providerCode\": \"2\",\n        \"providerName\": \"Some Medicine Provider Name\"\n    },\n    \"location\": {\n        \"gps\": \"12.423423,77.325647\",\n        \"radius\": {\n            \"type\": \"CONSTANT\",\n            \"value\": \"5\",\n            \"unit\": \"km\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/search"
+					},
+					"response": []
+				},
+				{
+					"name": "Select",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:pharmacy:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"providerId\": \"289edce4-d002-4962-b311-4c025e22b4f6\",\n        \"items\": [\n            {\n                \"id\": \"cons-01\",\n                \"quantity\": {\n                    \"value\": \"2\",\n                    \"unit\": \"units\"\n                }\n            },\n            {\n                \"id\": \"cons-02\",\n                \"quantity\": {\n                    \"value\": \"4\",\n                    \"unit\": \"units\"\n                }\n            }\n        ],\n        \"fullfillmentDetails\": [\n            {\n                \"id\": \"ful-01\"\n            }\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/select"
+					},
+					"response": []
+				},
+				{
+					"name": "Init",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:pharmacy:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"providerId\": \"289edce4-d002-4962-b311-4c025e22b4f6\",\n        \"items\": [\n            {\n                \"id\": \"cons-01\",\n                \"quantity\": {\n                    \"value\": \"2\",\n                    \"unit\": \"units\"\n                }\n            },\n            {\n                \"id\": \"cons-02\",\n                \"quantity\": {\n                    \"value\": \"4\",\n                    \"unit\": \"units\"\n                }\n            }\n        ],\n        \"billingDetails\": {\n            \"name\": \"Rajesh Kumar\",\n            \"address\": \"Villa 5, Green Valley, Malleshwaram, 560012\",\n            \"email\": \"rajesh.kumar@example.com\",\n            \"phone\": \"+91-9999999999\"\n        },\n        \"fullfillmentDetails\": [\n            {\n                \"id\": \"ful-01\",\n                \"stops\": [\n                    {\n                        \"type\": \"START\",\n                        \"location\": \"12.423423,77.325647\"\n                    },\n                    {\n                        \"type\": \"END\",\n                        \"location\": \"12.423483,77.325697\"\n                    }\n                ]\n            }\n        ],\n        \"docs\": [\n            {\n                \"code\": \"prescription\",\n                \"name\": \"Medicine prescription\",\n                \"shortDesc\": \"Prescription uploaded here\",\n                \"mimeType\": \"application/json\",\n                \"url\": \"https://quickpharma.in/prescription/04389d8c-6a50-4664-9c08-4ee45fef44e8.json\"\n            }\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/init"
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:pharmacy:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"providerId\": \"289edce4-d002-4962-b311-4c025e22b4f6\",\n        \"items\": [\n            {\n                \"id\": \"cons-01\",\n                \"quantity\": {\n                    \"value\": \"4\",\n                    \"unit\": \"units\"\n                }\n                \n            },\n            {\n                \"id\": \"cons-02\",\n                \"quantity\": {\n                    \"value\": \"4\",\n                    \"unit\": \"units\"\n                }\n               \n            }\n        ],\n        \"billingDetails\": {\n            \"name\": \"Rajesh Kumar\",\n            \"address\": \"Villa 5, Green Valley, Malleshwaram, 560012\",\n            \"email\": \"rajesh.kumar@example.com\",\n            \"phone\": \"+91-9999999999\"\n        },\n        \"fullfillmentDetails\": [\n            {\n                \"id\": \"ful-01\",\n                \"stops\": [\n                    {\n                        \"type\": \"START\",\n                        \"location\": \"12.423423,77.325647\"\n                    },\n                    {\n                        \"type\": \"END\",\n                        \"location\": \"12.423483,77.325697\"\n                    }\n                ]\n            }\n        ],\n        \"payments\": [\n            {\n                \"type\": \"ON-FULFILLMENT\",\n                \"status\": \"NOT-PAID\",\n                \"params\": {\n                    \"amount\": \"350\",\n                    \"currency\": \"INR\"\n                }\n            }\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/confirm"
+					},
+					"response": []
+				},
+				{
+					"name": "Status",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:pharmacy:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"orderId\": \"759b905c-5a30-4d18-a6af-0decbac9282f\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/status"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:pharmacy:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"orderId\": \"759b905c-5a30-4d18-a6af-0decbac9282f\"\n    },\n    \"cancellationDetails\": {\n        \"cancellationReasonId\": \"4\",\n        \"description\": {\n            \"shortDesc\": \"Prescription Changed\",\n            \"longDesc\": \"The patient's prescription has been changed, and the medication order is no longer valid.\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/cancel"
+					},
+					"response": []
+				},
+				{
+					"name": "Rating",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:pharmacy:0.1.0\"\n    },\n    \"ratingDetails\": [\n        {\n            \"id\": \"a9aaecca-10b7-4d19-b640-b047a7c621961676906777032\",\n            \"ratingCategory\": \"Item\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/rating"
+					},
+					"response": []
+				},
+				{
+					"name": "Support",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:pharmacy:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"orderId\": \"759b905c-5a30-4d18-a6af-0decbac9282f\"\n    },\n    \"contactDetails\": {\n        \"phone\": \"+919876543210\",\n        \"email\": \"john.doe@gmail.com\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/support"
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:pharmacy:0.1.0\"\n    },\n    \"orderDetails\":{\n        \"orderId\":\"853c7593-f4bf-4557-8832-118a591787ba\",\n        \"update_target\":\"order.fulfillments[0].stops[0]\",\n        \"fullfillmentDetails\": [\n            {\n                \"id\": \"ful-01\",\n                \"stops\": [\n                    {\n                        \"type\": \"START\",\n                        \"location\": \"12.423423,77.325647\"\n                    },\n                    {\n                        \"type\": \"END\",\n                        \"location\": \"12.423483,77.325697\"\n                    }\n                ]\n            }\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/update"
+					},
+					"response": []
+				},
+				{
+					"name": "Track",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:pharmacy:0.1.0\"\n    },\n    \"orderDetails\":{\n        \"orderId\":\"853c7593-f4bf-4557-8832-118a591787ba\"\n    },\n    \"callbackURL\":\"https://dhp-network-bap.becknprotocol.io/track/callback\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/track"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Diagnostics",
+			"item": [
+				{
+					"name": "Search",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"domain\": \"dhp:diagnostics:0.1.0\"\n    },\n    \"searchString\": \"paracetamol\",\n    \"categoryName\": \"medicine\",\n    \"categoryId\": \"2\",\n    \"provider\": {\n        \"providerId\": \"289edce4-d002-4962-b311-4c025e22b4f6\",\n        \"providerCode\": \"2\",\n        \"providerName\": \"Some Medicine Provider Name\"\n    },\n    \"location\": {\n        \"gps\": \"12.423423,77.325647\",\n        \"radius\": {\n            \"type\": \"CONSTANT\",\n            \"value\": \"5\",\n            \"unit\": \"km\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/search"
+					},
+					"response": []
+				},
+				{
+					"name": "Select",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:diagnostics:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"providerId\": \"289edce4-d002-4962-b311-4c025e22b4f6\",\n        \"items\": [\n            {\n                \"id\": \"cons-01\"\n            },\n            {\n                \"id\": \"cons-02\"\n            }\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/select"
+					},
+					"response": []
+				},
+				{
+					"name": "Init",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:diagnostics:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"providerId\": \"289edce4-d002-4962-b311-4c025e22b4f6\",\n        \"items\": [\n            {\n                \"id\": \"cons-01\"\n            },\n            {\n                \"id\": \"cons-02\"\n            }\n        ],\n        \"billingDetails\": {\n            \"person\": {\n                \"name\": \"Rajesh Kumar\",\n                \"age\": \"26\",\n                \"gender\": \"M\",\n                \"dob\": \"1995-09-11\"\n            }\n        },\n        \"fullfillmentDetails\": [\n            {\n                \"id\": \"ful-01\",\n                \"customerDetails\": {\n                    \"person\": {\n                        \"name\": \"Rajesh Kumar\",\n                        \"age\": \"26\",\n                        \"gender\": \"M\",\n                        \"dob\": \"1995-09-11\"\n                    }\n                }\n            }\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/init"
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:diagnostics:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"providerId\": \"289edce4-d002-4962-b311-4c025e22b4f6\",\n        \"items\": [\n            {\n                \"id\": \"cons-01\",\n                \"xinput\": {\n                    \"form_response\": {\n                        \"status\": true,\n                        \"submission_id\": \"c844d5f4-29c3-4398-b594-8b4716ef5dbf\"\n                    }\n                }\n            },\n            {\n                \"id\": \"cons-02\",\n                \"xinput\": {\n                    \"form_response\": {\n                        \"status\": true,\n                        \"submission_id\": \"c844d5f4-29c3-4398-b594-8b4716ef5dbf\"\n                    }\n                }\n            }\n        ],\n        \"billingDetails\": {\n            \"name\": \"Rajesh Kumar\",\n            \"address\": \"Villa 5, Green Valley, Malleshwaram, 560012\",\n            \"email\": \"rajesh.kumar@example.com\",\n            \"phone\": \"+91-9999999999\"\n        },\n        \"fullfillmentDetails\": [\n            {\n                \"id\": \"ful-01\",\n                \"customerDetails\": {\n                    \"person\": {\n                        \"name\": \"Rajesh Kumar\",\n                        \"age\": \"26\",\n                        \"gender\": \"M\",\n                        \"dob\": \"1995-09-11\"\n                    }\n                }\n            }\n        ],\n        \"payments\": [\n            {\n                \"type\": \"ON-FULFILLMENT\",\n                \"status\": \"NOT-PAID\",\n                \"params\": {\n                    \"amount\": \"350\",\n                    \"currency\": \"INR\"\n                }\n            }\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/confirm"
+					},
+					"response": []
+				},
+				{
+					"name": "Status",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:diagnostics:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"orderId\": \"759b905c-5a30-4d18-a6af-0decbac9282f\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/status"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:diagnostics:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"orderId\": \"759b905c-5a30-4d18-a6af-0decbac9282f\"\n    },\n    \"cancellationDetails\": {\n        \"cancellationReasonId\": \"4\",\n        \"description\": {\n            \"shortDesc\": \"Change in Doctor's Recommendation\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/cancel"
+					},
+					"response": []
+				},
+				{
+					"name": "Support",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:diagnostics:0.1.0\"\n    },\n    \"orderDetails\": {\n        \"orderId\": \"759b905c-5a30-4d18-a6af-0decbac9282f\"\n    },\n    \"contactDetails\": {\n        \"phone\": \"+919876543210\",\n        \"email\": \"john.doe@gmail.com\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/support"
+					},
+					"response": []
+				},
+				{
+					"name": "Rating",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:diagnostics:0.1.0\"\n    },\n    \"ratingDetails\": [\n        {\n            \"id\": \"a9aaecca-10b7-4d19-b640-b047a7c621961676906777032\",\n            \"ratingCategory\": \"Item\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/rating"
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:diagnostics:0.1.0\"\n    },\n    \"orderDetails\":{\n        \"orderId\":\"853c7593-f4bf-4557-8832-118a591787ba\",\n        \"update_target\":\"order.billing\",\n        \"billingDetails\": {\n            \"name\": \"Rajesh Kumar\",\n            \"address\": \"Villa 5, Green Valley, Malleshwaram, 560012\",\n            \"email\": \"rajesh.kumar@example.com\",\n            \"phone\": \"+91-9999999999\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/update"
+					},
+					"response": []
+				},
+				{
+					"name": "Track",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"context\": {\n        \"transactionId\": \"6de92cb1-c05c-424b-bcdc-9a7b68092a9f\",\n        \"messageId\": \"475c2531-ce84-4e45-a7d5-b17435b43efe\",\n        \"bppId\": \"beckn-sandbox-bpp.becknprotocol.io\",\n        \"bppUri\": \"https://sandbox-bpp-network.becknprotocol.io/\",\n        \"domain\": \"dhp:diagnostics:0.1.0\"\n    },\n    \"orderDetails\":{\n        \"orderId\":\"853c7593-f4bf-4557-8832-118a591787ba\"\n    },\n    \"callbackURL\":\"https://dhp-network-bap.becknprotocol.io/track/callback\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/dhp/track"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "bpp_id",
+			"value": "beckn-sandbox-bpp.becknprotocol.io",
+			"type": "string"
+		},
+		{
+			"key": "bpp_uri",
+			"value": "https://sandbox-bpp-network.becknprotocol.io",
+			"type": "string"
+		}
+	]
+}

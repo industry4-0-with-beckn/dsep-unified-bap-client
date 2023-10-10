@@ -206,6 +206,7 @@ export const buildSearchResponse = (response: any) => {
 };
 
 export const buildSelectRequest = (body: any) => {
+  const reqOrderDetails = body?.orderDetails || {};
   const context = buildRequestContext({
     domain: body?.context?.domain,
     action: "select",
@@ -215,15 +216,65 @@ export const buildSelectRequest = (body: any) => {
     bppUri: body?.context?.bppUri
   });
 
-  const message = {
-    order: {
-      provider: { id: body?.providerId },
-      items: body?.items
-    }
-  };
+  let order: any = {};
+  if (reqOrderDetails?.providerId) {
+    order = {
+      ...order,
+      provider: {
+        id: reqOrderDetails?.providerId
+      }
+    };
+  }
+  if (reqOrderDetails?.items && reqOrderDetails?.items?.length) {
+    order = {
+      ...order,
+      items: reqOrderDetails?.items?.map((item: any) => ({
+        id: item?.id,
+        ...(() => {
+          if (item?.quantity) {
+            return { quantity: { selected: { measure: item?.quantity } } };
+          }
+        })()
+      }))
+    };
+  }
+  if (
+    reqOrderDetails?.fullfillmentDetails &&
+    reqOrderDetails?.fullfillmentDetails.length
+  ) {
+    order = {
+      ...order,
+      fulfillments: reqOrderDetails?.fullfillmentDetails.map(
+        (fulfillment: any) => {
+          let mappedFulfillment: any = {
+            id: fulfillment?.id
+          };
+          if (fulfillment?.customerDetails) {
+            mappedFulfillment = {
+              ...mappedFulfillment,
+              customer: {
+                person: fulfillment?.customerDetails?.person,
+                contact: fulfillment?.customerDetails?.contact
+              }
+            };
+          }
+          if (fulfillment?.stops && fulfillment?.stops?.length) {
+            mappedFulfillment = {
+              ...mappedFulfillment,
+              stops: fulfillment.stops.map((stop: any) => ({
+                type: stop?.type,
+                location: { gps: stop?.location }
+              }))
+            };
+          }
 
+          return mappedFulfillment;
+        }
+      )
+    };
+  }
   return {
-    payload: { context, message }
+    payload: { context, message: { order } }
   };
 };
 
@@ -323,6 +374,25 @@ export const buildSelectResponse = (body: any) => {
     order = {
       ...order,
       items
+    };
+  }
+
+  if(message?.order?.fulfillments && !message?.order?.items[0]?.fulfillment_ids){
+    let fulfillments: any[] = message?.order?.fulfillments?.map((fulfillment: any) =>{
+      return {
+        id: fulfillment?.id,
+        type: fulfillment?.type,
+        tracking: fulfillment?.tracking,
+        stops: fulfillment?.stops.map((stop: any) => ({
+          type: stop?.type,
+          time: stop?.time?.timestamp,
+          location: stop?.location?.gps
+        }))
+      };
+    });
+    order = {
+      ...order,
+      fulfillments
     };
   }
   
@@ -1118,7 +1188,7 @@ export const buildTrackResponse = (body: any) => {
 };
 
 export const buildUpdateRequest = (body: any) => {
-  const reqOrderDetails = body?.orderDetails || {};
+  const { orderDetails } = body;
   let context = buildRequestContext({
     domain: body?.context?.domain,
     action: "update",
@@ -1127,23 +1197,102 @@ export const buildUpdateRequest = (body: any) => {
     bppId: body?.context?.bppId,
     bppUri: body?.context?.bppUri
   });
+  
   let order: any = {};
-  if (reqOrderDetails?.orderId) {
+  if (orderDetails?.providerId) {
     order = {
       ...order,
-      id: reqOrderDetails?.orderId
+      provider: {
+        id: orderDetails?.providerId
+      }
     };
   }
-  if (reqOrderDetails?.billingDetails) {
+  if (orderDetails?.items && orderDetails?.items?.length) {
     order = {
       ...order,
-      billing: reqOrderDetails?.billingDetails
+      items: orderDetails?.items?.map((item: any) => ({
+        id: item?.id,
+        xinput: item?.xinput,
+        ...(() => {
+          if (item?.quantity) {
+            return { quantity: { selected: { measure: item?.quantity } } };
+          }
+        })()
+      }))
+    };
+  }
+  if (orderDetails?.billingDetails) {
+    order = {
+      ...order,
+      billing: orderDetails?.billingDetails
+    };
+  }
+  if (
+    orderDetails?.fullfillmentDetails &&
+    orderDetails?.fullfillmentDetails.length
+  ) {
+    order = {
+      ...order,
+      fulfillments: orderDetails?.fullfillmentDetails.map(
+        (fulfillment: any) => {
+          let mappedFulfillment: any = {
+            id: fulfillment?.id
+          };
+          if (fulfillment?.customerDetails) {
+            mappedFulfillment = {
+              ...mappedFulfillment,
+              customer: {
+                person: fulfillment?.customerDetails?.person,
+                contact: fulfillment?.customerDetails?.contact
+              }
+            };
+          }
+          if (fulfillment?.stops && fulfillment?.stops?.length) {
+            mappedFulfillment = {
+              ...mappedFulfillment,
+              stops: fulfillment.stops.map((stop: any) => ({
+                type: stop?.type,
+                location: { gps: stop?.location }
+              }))
+            };
+          }
+
+          return mappedFulfillment;
+        }
+      )
+    };
+  }
+  if (orderDetails?.docs && orderDetails?.docs.length) {
+    order = {
+      ...order,
+      docs: orderDetails.docs.map((doc: any) => ({
+        descriptor: {
+          code: doc?.code,
+          name: doc?.name,
+          short_desc: doc?.shortDesc
+        },
+        mime_type: doc?.mimeType,
+        url: doc?.url
+      }))
+    };
+  }
+  if (orderDetails?.payments) {
+    order = {
+      ...order,
+      payments: orderDetails?.payments
+    };
+  }
+
+  if(orderDetails?.orderId){
+    order = {
+      ...order,
+      id: orderDetails?.orderId
     };
   }
 
   return {
     payload: { context, message: { 
-      update_target: reqOrderDetails?.update_target,
+      update_target: orderDetails?.update_target,
       order 
     } }
   };
@@ -1164,6 +1313,7 @@ export const buildUpdateResponse = (body: any) => {
       }
     };
   }
+
   if (message?.order?.items && message?.order?.items.length) {
     let items: any[] = message?.order?.items?.map((item: any) => {
       return {
@@ -1239,6 +1389,25 @@ export const buildUpdateResponse = (body: any) => {
       items
     };
   }
+  
+  if(message?.order?.fulfillments && !message?.order?.items[0]?.fulfillment_ids){
+    let fulfillments: any[] = message?.order?.fulfillments?.map((fulfillment: any) =>{
+      return {
+        id: fulfillment?.id,
+        type: fulfillment?.type,
+        tracking: fulfillment?.tracking,
+        stops: fulfillment?.stops.map((stop: any) => ({
+          type: stop?.type,
+          time: stop?.time?.timestamp,
+          location: stop?.location?.gps
+        }))
+      };
+    });
+    order = {
+      ...order,
+      fulfillments
+    };
+  }
 
   order = {
     ...order,
@@ -1246,6 +1415,7 @@ export const buildUpdateResponse = (body: any) => {
     quote: message?.order?.quote,
     billing: message?.order?.billing,
     payments: message?.order?.payments,
+    cancellationTerms: message?.order?.cancellation_terms,
     docs: message?.order?.docs?.map((doc: any) => {
       return {
         docName: doc?.descriptor?.name,

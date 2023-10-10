@@ -105,6 +105,7 @@ export const update = async (
     const { data } = await updateService(req?.body);
     return res.status(200).json(data);
   } catch(error: any) {
+    console.log("Controler exception => ", error);
     return res.status(error?.response?.status || 500).json({ 
       error: error?.response?.statusText || "An exception has occurred."
     });

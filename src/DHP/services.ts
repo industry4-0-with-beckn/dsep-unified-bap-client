@@ -141,7 +141,7 @@ export const updateService = async (body: any) => {
     const { context, orderDetails } = buildUpdateResponse(updateRes.data);
     return { data: { context, orderDetails }, errorOccured: false };
   } catch (error: any) {
-    console.log(error.response.data.error.data.errors);
+    console.log(error);
     return { errorOccured: true, message: error.message };
   }
 };
