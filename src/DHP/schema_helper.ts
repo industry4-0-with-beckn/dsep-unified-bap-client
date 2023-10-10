@@ -240,10 +240,11 @@ export const buildSelectResponse = (body: any) => {
         id: message?.order?.provider?.id,
         name: message?.order?.provider?.descriptor?.name,
         shortDescription: message?.order?.provider?.descriptor?.short_desc,
-        image: message?.order?.provider?.descriptor?.images?.map((image: any) => ({
-          url: image?.url,
-          size: image?.size_type
-        }))
+        image: message?.order?.provider?.descriptor?.images[0]?.url
+        // image: message?.order?.provider?.descriptor?.images?.map((image: any) => ({
+        //   url: image?.url,
+        //   size: image?.size_type
+        // }))
       }
     };
   }
@@ -995,6 +996,127 @@ export const buildCancelResponse = (body: any) => {
   return { context: respcontext, orderDetails };
 };
 
+export const buildSupportRequest = (body: any) => {
+  const { orderDetails = {}, contactDetails = {} } = body;
+  let message: any = {};
+  let support: any = {};
+  let context = buildRequestContext({
+    domain: body?.context?.domain,
+    action: "support",
+    transactionId: body?.context?.transactionId,
+    messageId: body?.context?.messageId,
+    bppId: body?.context?.bppId,
+    bppUri: body?.context?.bppUri
+  });
+
+  support = {
+    ...support,
+    order_id: orderDetails?.orderId,
+    phone: contactDetails?.phone,
+    email: contactDetails?.email
+  };
+
+  return {
+    payload: { context, message: { support } }
+  };
+};
+
+export const buildSupportResponse = (body: any) => {
+  const { context = {}, message = {} } = body?.responses[0];
+  const respcontext = buildResponseContext(context);
+  let orderDetails: any = {
+    orderId: message?.support?.order_id
+  };
+
+  return {
+    context: respcontext,
+    orderDetails,
+    supportDetails: {
+      phone: message?.support?.phone,
+      email: message?.support?.email,
+      url: message?.support?.url
+    }
+  };
+};
+
+export const buildRatingRequest = (body: any) => {
+  const { ratingDetails = [] } = body;
+
+  let context = buildRequestContext({
+    domain: body?.context?.domain,
+    action: "rating",
+    transactionId: body?.context?.transactionId,
+    messageId: body?.context?.messageId,
+    bppId: body?.context?.bppId,
+    bppUri: body?.context?.bppUri
+  });
+  let ratings = [];
+  if (ratingDetails && ratingDetails.length) {
+    ratings = ratingDetails.map((detail: any) => ({
+      id: detail?.id,
+      rating_category: detail?.ratingCategory
+    }));
+  }
+
+  return {
+    payload: { context, message: { ratings } }
+  };
+};
+
+export const buildRatingResponse = (body: any) => {
+  const { context = {}, message = {} } = body?.responses[0];
+  const respcontext = buildResponseContext(context);
+  let feedbackForm: any = message?.feedback_form;
+
+  return { context: respcontext, message: { feedbackForm } };
+};
+
+export const buildTrackRequest = (body: any) => {
+  const { orderDetails = {}, callbackURL = "" } = body;
+
+  let context = buildRequestContext({
+    domain: body?.context?.domain,
+    action: "track",
+    transactionId: body?.context?.transactionId,
+    messageId: body?.context?.messageId,
+    bppId: body?.context?.bppId,
+    bppUri: body?.context?.bppUri
+  });
+
+  return {
+    payload: {
+      context,
+      message: {
+        order_id: orderDetails?.orderId,
+        ...(() => {
+          if (callbackURL) {
+            return { callback_url: callbackURL };
+          } else return {};
+        })()
+      }
+    }
+  };
+};
+
+export const buildTrackResponse = (body: any) => {
+  const { context = {}, message = {} } = body?.responses[0];
+  const respcontext = buildResponseContext(context);
+  let trackingDetails: any = {};
+  if (message?.tracking && Object.keys(message?.tracking).length) {
+    trackingDetails = (() => {
+      return {
+        ...message?.tracking,
+        location: {
+          name: message?.tracking?.location?.descriptor?.name,
+          locationGps: message?.tracking?.location?.gps
+        }
+      };
+    })();
+  }
+
+  return { context: respcontext, trackingDetails };
+};
+
 export const buildUpdateRequest = (body: any) => {
   const reqOrderDetails = body?.orderDetails || {};
   let context = buildRequestContext({
@@ -1120,7 +1242,7 @@ export const buildUpdateResponse = (body: any) => {
 
   order = {
     ...order,
-    id: message?.order?.id,
+    orderId: message?.order?.id,
     quote: message?.order?.quote,
     billing: message?.order?.billing,
     payments: message?.order?.payments,

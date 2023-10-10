@@ -12,7 +12,13 @@ import {
   buildCancelRequest,
   buildCancelResponse,
   buildUpdateRequest,
-  buildUpdateResponse
+  buildUpdateResponse,
+  buildSupportRequest,
+  buildSupportResponse,
+  buildRatingResponse,
+  buildRatingRequest,
+  buildTrackRequest,
+  buildTrackResponse
 } from "./schema_helper";
 import axios from "axios";
 
@@ -134,6 +140,62 @@ export const updateService = async (body: any) => {
     });
     const { context, orderDetails } = buildUpdateResponse(updateRes.data);
     return { data: { context, orderDetails }, errorOccured: false };
+  } catch (error: any) {
+    console.log(error.response.data.error.data.errors);
+    return { errorOccured: true, message: error.message };
+  }
+};
+
+export const supportService = async (body: any) => {
+  try {
+    const { payload } = buildSupportRequest(body);
+    console.log("Payload for BAP Connection:==>", JSON.stringify(payload));
+    const headers = { "Content-Type": "application/JSON" };
+
+    const supportRes = await axios.post(`${gatewayUrl}/support`, payload, {
+      headers
+    });
+    const { context, orderDetails, supportDetails } = buildSupportResponse(
+      supportRes.data
+    );
+    return {
+      data: { context, orderDetails, supportDetails },
+      errorOccured: false
+    };
+  } catch (error: any) {
+    console.log(error.response.data.error.data.errors);
+    return { errorOccured: true, message: error.message };
+  }
+};
+
+export const ratingService = async (body: any) => {
+  try {
+    const { payload } = buildRatingRequest(body);
+    console.log("Payload for BAP Connection:==>", JSON.stringify(payload));
+    const headers = { "Content-Type": "application/JSON" };
+
+    const ratingRes = await axios.post(`${gatewayUrl}/rating`, payload, {
+      headers
+    });
+    const { context, message } = buildRatingResponse(ratingRes.data);
+    return { data: { context, message }, errorOccured: false };
+  } catch (error: any) {
+    console.log(error.response.data.error.data.errors);
+    return { errorOccured: true, message: error.message };
+  }
+};
+
+export const trackService = async (body: any) => {
+  try {
+    const { payload } = buildTrackRequest(body);
+    console.log("Payload for BAP Connection:==>", JSON.stringify(payload));
+    const headers = { "Content-Type": "application/JSON" };
+
+    const ratingRes = await axios.post(`${gatewayUrl}/track`, payload, {
+      headers
+    });
+    const { context, trackingDetails } = buildTrackResponse(ratingRes.data);
+    return { data: { context, trackingDetails }, errorOccured: false };
   } catch (error: any) {
     console.log(error.response.data.error.data.errors);
     return { errorOccured: true, message: error.message };

@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { selectSchema } from "../helper/api-validator";
 
 import {
   searchService,
@@ -8,8 +7,12 @@ import {
   confirmService,
   statusService,
   cancelService,
-  updateService
+  updateService,
+  supportService,
+  ratingService,
+  trackService
 } from "./services";
+
 export const search = async (
   req: Request,
   res: Response,
@@ -25,7 +28,7 @@ export const select = async (
   next: NextFunction
 ) => {
   try {
-    const data = await selectService(req?.body);
+    const { data } = await selectService(req?.body);
     return res.status(200).json(data);
   } catch(error: any) {
     return res.status(error?.response?.status || 500).json({ 
@@ -71,22 +74,35 @@ export const track = async (
   res: Response,
   next: NextFunction
 ) => {
-  return res.status(200).json({});
+  const { data } = await trackService(req?.body);
+  return res.status(200).json(data);
 };
+
 export const support = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  return res.status(200).json({});
+  const { data } = await supportService(req?.body);
+  return res.status(200).json(data);
 };
+
+export const rating = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { data } = await ratingService(req?.body);
+  return res.status(200).json(data);
+};
+
 export const update = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const data = await updateService(req?.body);
+    const { data } = await updateService(req?.body);
     return res.status(200).json(data);
   } catch(error: any) {
     return res.status(error?.response?.status || 500).json({ 
