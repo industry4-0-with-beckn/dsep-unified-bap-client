@@ -7,7 +7,8 @@ import {
   initService,
   confirmService,
   statusService,
-  cancelService
+  cancelService,
+  updateService
 } from "./services";
 export const search = async (
   req: Request,
@@ -24,14 +25,8 @@ export const select = async (
   next: NextFunction
 ) => {
   try {
-    const { error } = selectSchema.validate(req?.body);
-    console.log("Joi Error == ", error);
-    if (error) {
-      return res.status(400).json({ error: error?.details[0]?.message || "Bad Request." });
-    } else{
-      const data = await selectService(req?.body);
-      return res.status(200).json(data);
-    }
+    const data = await selectService(req?.body);
+    return res.status(200).json(data);
   } catch(error: any) {
     return res.status(error?.response?.status || 500).json({ 
       error: error?.response?.statusText || "An exception has occurred."
@@ -84,4 +79,18 @@ export const support = async (
   next: NextFunction
 ) => {
   return res.status(200).json({});
+};
+export const update = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = await updateService(req?.body);
+    return res.status(200).json(data);
+  } catch(error: any) {
+    return res.status(error?.response?.status || 500).json({ 
+      error: error?.response?.statusText || "An exception has occurred."
+    });
+  }
 };

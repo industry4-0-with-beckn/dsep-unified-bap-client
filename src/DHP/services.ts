@@ -10,7 +10,9 @@ import {
   buildStatusRequest,
   buildStatusResponse,
   buildCancelRequest,
-  buildCancelResponse
+  buildCancelResponse,
+  buildUpdateRequest,
+  buildUpdateResponse
 } from "./schema_helper";
 import axios from "axios";
 
@@ -52,6 +54,7 @@ export const selectService = async (body: any) => {
     }
   }
 };
+
 export const initService = async (body: any) => {
   try {
     const { payload } = buildInitRequest(body);
@@ -113,6 +116,23 @@ export const cancelService = async (body: any) => {
       headers
     });
     const { context, orderDetails } = buildCancelResponse(statusRes.data);
+    return { data: { context, orderDetails }, errorOccured: false };
+  } catch (error: any) {
+    console.log(error.response.data.error.data.errors);
+    return { errorOccured: true, message: error.message };
+  }
+};
+
+export const updateService = async (body: any) => {
+  try {
+    const { payload } = buildUpdateRequest(body);
+    console.log("Payload for BAP Connection:==>", JSON.stringify(payload));
+    const headers = { "Content-Type": "application/JSON" };
+
+    const updateRes = await axios.post(`${gatewayUrl}/update`, payload, {
+      headers
+    });
+    const { context, orderDetails } = buildUpdateResponse(updateRes.data);
     return { data: { context, orderDetails }, errorOccured: false };
   } catch (error: any) {
     console.log(error.response.data.error.data.errors);
