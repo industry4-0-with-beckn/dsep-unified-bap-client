@@ -3,8 +3,16 @@ export interface ITrainingNetworkContext {
   message_id: string;
   action: string;
   timestamp: string;
-  country: string;
-  city: string;
+  location: {
+    city: {
+      name: string;
+      code: string;
+    };
+    country: {
+      name: string;
+      code: string;
+    };
+  };
   version: string;
   bap_uri: string;
   bap_id: string;

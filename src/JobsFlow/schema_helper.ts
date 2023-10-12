@@ -51,6 +51,7 @@ export const buildSearchRequest = (input: any = {}) => {
   }
 
   const message = { intent: intent };
+  console.log("message", message);
   return { payload: { context, message }, optional };
 };
 
@@ -780,6 +781,7 @@ export const buildOnConfirmResponse = (response: any = {}) => {
 
   return {
     data: {
+      original: input,
       context,
       applicationId,
       company,
