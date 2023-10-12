@@ -583,6 +583,9 @@ export const buildConfirmRequest = (input: any = {}) => {
       items: [
         {
           id: input?.jobId,
+          descriptor:{
+            name:input?.jobName
+          },
           fulfillment_ids: [input?.confirmation?.JobFulfillmentCategoryId]
         }
       ],
