@@ -572,7 +572,13 @@ export const buildConfirmRequest = (input: any = {}) => {
   });
   const message: any = {
     order: {
-      provider: { id: input?.companyId },
+      provider: {
+        id: input?.companyId,
+        descriptor: {
+          name: input?.company?.name,
+          //short_desc: input?.company?.short_desc,
+        },
+      },
       items: [
         {
           id: input?.jobId,
