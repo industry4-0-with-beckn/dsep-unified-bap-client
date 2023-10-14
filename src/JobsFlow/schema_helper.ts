@@ -577,7 +577,6 @@ export const buildConfirmRequest = (input: any = {}) => {
         id: input?.companyId,
         descriptor: {
           name: input?.company?.name,
-          //short_desc: input?.company?.short_desc,
         },
       },
       items: [
