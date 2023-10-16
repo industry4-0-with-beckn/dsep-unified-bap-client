@@ -573,10 +573,18 @@ export const buildConfirmRequest = (input: any = {}) => {
   });
   const message: any = {
     order: {
-      provider: { id: input?.companyId },
+      provider: {
+        id: input?.companyId,
+        descriptor: {
+          name: input?.company?.name,
+        },
+      },
       items: [
         {
           id: input?.jobId,
+          descriptor:{
+            name:input?.jobName
+          },
           fulfillment_ids: [input?.confirmation?.JobFulfillmentCategoryId]
         }
       ],
@@ -775,6 +783,7 @@ export const buildOnConfirmResponse = (response: any = {}) => {
 
   return {
     data: {
+      original: input,
       context,
       applicationId,
       company,
