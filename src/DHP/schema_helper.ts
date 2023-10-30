@@ -104,11 +104,13 @@ export const buildSearchRequest = (body: any) => {
           },
           location: body?.provider?.location?.map((item: any) => {
             return {
-              gps: item?.gps,
-              radius: {
-                type: item?.radius?.type,
-                value: item?.radius?.value,
-                unit: item?.radius?.unit
+              circle: {
+                gps: item?.gps,
+                radius: {
+                  type: item?.radius?.type,
+                  value: item?.radius?.value,
+                  unit: item?.radius?.unit
+                }
               }
             }
           }),
