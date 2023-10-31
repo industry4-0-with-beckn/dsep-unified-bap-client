@@ -11,10 +11,11 @@ import {
   update,
   rating
 } from "./controller";
+import { validateLocation } from "./validator";
 const router: Router = express.Router();
 
 export const DHProutes = () => {
-  router.post("/search", search);
+  router.post("/search", validateLocation, search);
   router.post("/select", select);
   router.post("/init", init);
   router.post("/confirm", confirm);

@@ -17,7 +17,7 @@ interface IContextBuilderInput {
 }
 
 export const buildRequestContext = (input: IContextBuilderInput) => {
-  try{
+  try {
     const context = {
       domain: input?.domain,
       action: input?.action ?? "",
@@ -44,11 +44,11 @@ export const buildRequestContext = (input: IContextBuilderInput) => {
     return context;
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 const buildResponseContext = (input: any) => {
-  try{
+  try {
     const context = {
       transactionId: input?.transaction_id,
       messageId: input?.message_id,
@@ -58,11 +58,11 @@ const buildResponseContext = (input: any) => {
     return context;
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildSearchRequest = (body: any) => {
-  try{
+  try {
     const context = buildRequestContext({
       domain: body?.context?.domain,
       action: "search"
@@ -101,27 +101,39 @@ export const buildSearchRequest = (body: any) => {
           descriptor: {
             name: body?.provider?.providerName,
             code: body?.provider?.providerCode
-          }
+          },
+          location: body?.provider?.location?.map((item: any) => {
+            return {
+              circle: {
+                gps: item?.gps,
+                radius: {
+                  type: item?.radius?.type,
+                  value: item?.radius?.value,
+                  unit: item?.radius?.unit
+                }
+              }
+            }
+          }),
         }
       };
     }
-    if (body?.location) {
-      intent = {
-        ...intent,
-        location: body?.location
-      };
-    }
+    // if (body?.location) {
+    //   intent = {
+    //     ...intent,
+    //     location: body?.location
+    //   };
+    // }
 
     return {
       payload: { context, message: { intent } }
     };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildSearchResponse = (response: any) => {
-  try{
+  try {
     const bppResponse = response?.responses;
     if (!bppResponse || !bppResponse.length) {
       return { status: 200, data: [] };
@@ -180,16 +192,16 @@ export const buildSearchResponse = (response: any) => {
                   ...(() =>
                     requiredFullfillment?.agent
                       ? {
-                          agentDetails: {
-                            id: requiredFullfillment?.agent?.person?.id,
-                            name: requiredFullfillment?.agent?.person?.name,
-                            gender: requiredFullfillment?.agent?.person?.gender,
-                            creds: requiredFullfillment?.agent?.person?.creds,
-                            languages:
-                              requiredFullfillment?.agent?.person?.languages,
-                            skills: requiredFullfillment?.agent?.person?.skills
-                          }
+                        agentDetails: {
+                          id: requiredFullfillment?.agent?.person?.id,
+                          name: requiredFullfillment?.agent?.person?.name,
+                          gender: requiredFullfillment?.agent?.person?.gender,
+                          creds: requiredFullfillment?.agent?.person?.creds,
+                          languages:
+                            requiredFullfillment?.agent?.person?.languages,
+                          skills: requiredFullfillment?.agent?.person?.skills
                         }
+                      }
                       : {})(),
 
                   tracking: requiredFullfillment?.tracking
@@ -200,13 +212,13 @@ export const buildSearchResponse = (response: any) => {
               ...() => {
                 item?.location_ids
                   ? {
-                      locations: item?.location_ids.map((locationId: any) => {
-                        const requiredLocation = provider?.locations.find(
-                          (location: any) => location?.id === locationId
-                        );
-                        return requiredLocation;
-                      })
-                    }
+                    locations: item?.location_ids.map((locationId: any) => {
+                      const requiredLocation = provider?.locations.find(
+                        (location: any) => location?.id === locationId
+                      );
+                      return requiredLocation;
+                    })
+                  }
                   : {};
               }
             };
@@ -218,11 +230,11 @@ export const buildSearchResponse = (response: any) => {
     return { data: finalData };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildSelectRequest = (body: any) => {
-  try{
+  try {
     const reqOrderDetails = body?.orderDetails || {};
     const context = buildRequestContext({
       domain: body?.context?.domain,
@@ -238,7 +250,15 @@ export const buildSelectRequest = (body: any) => {
       order = {
         ...order,
         provider: {
-          id: reqOrderDetails?.providerId
+          id: reqOrderDetails?.providerId,
+          location: {
+            gps: body?.location?.gps,
+            radius: {
+              type: body?.location?.radius?.type,
+              value: body?.location?.radius?.value,
+              unit: body?.location?.radius?.unit
+            }
+          }
         }
       };
     }
@@ -295,7 +315,7 @@ export const buildSelectRequest = (body: any) => {
     };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildSelectResponse = (body: any) => {
@@ -397,8 +417,8 @@ export const buildSelectResponse = (body: any) => {
       };
     }
 
-    if(message?.order?.fulfillments && !message?.order?.items[0]?.fulfillment_ids){
-      let fulfillments: any[] = message?.order?.fulfillments?.map((fulfillment: any) =>{
+    if (message?.order?.fulfillments && !message?.order?.items[0]?.fulfillment_ids) {
+      let fulfillments: any[] = message?.order?.fulfillments?.map((fulfillment: any) => {
         return {
           id: fulfillment?.id,
           type: fulfillment?.type,
@@ -415,7 +435,7 @@ export const buildSelectResponse = (body: any) => {
         fulfillments
       };
     }
-    
+
     order = {
       ...order,
       quote: message?.order?.quote
@@ -427,7 +447,7 @@ export const buildSelectResponse = (body: any) => {
 }
 
 export const buildInitRequest = (body: any) => {
-  try{
+  try {
     const reqOrderDetails = body?.orderDetails || {};
     let context = buildRequestContext({
       domain: body?.context?.domain,
@@ -442,7 +462,15 @@ export const buildInitRequest = (body: any) => {
       order = {
         ...order,
         provider: {
-          id: reqOrderDetails?.providerId
+          id: reqOrderDetails?.providerId,
+          location: {
+            gps: body?.location?.gps,
+            radius: {
+              type: body?.location?.radius?.type,
+              value: body?.location?.radius?.value,
+              unit: body?.location?.radius?.unit
+            }
+          }
         }
       };
     }
@@ -519,11 +547,11 @@ export const buildInitRequest = (body: any) => {
     };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildInitResponse = (body: any) => {
-  try{
+  try {
     const { context = {}, message = {} } = body?.responses[0];
     const respcontext = buildResponseContext(context);
     let order: any = {};
@@ -623,11 +651,11 @@ export const buildInitResponse = (body: any) => {
     return { context: respcontext, orderDetails: order };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildConfirmRequest = (body: any) => {
-  try{
+  try {
     const { orderDetails } = body;
     let context = buildRequestContext({
       domain: body?.context?.domain,
@@ -642,7 +670,15 @@ export const buildConfirmRequest = (body: any) => {
       order = {
         ...order,
         provider: {
-          id: orderDetails?.providerId
+          id: orderDetails?.providerId,
+          location: {
+            gps: body?.location?.gps,
+            radius: {
+              type: body?.location?.radius?.type,
+              value: body?.location?.radius?.value,
+              unit: body?.location?.radius?.unit
+            }
+          }
         }
       };
     }
@@ -732,11 +768,11 @@ export const buildConfirmRequest = (body: any) => {
     };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildConfirmResponse = (body: any) => {
-  try{
+  try {
     const { context = {}, message = {} } = body?.responses[0];
     const respcontext = buildResponseContext(context);
     let order: any = {
@@ -838,11 +874,11 @@ export const buildConfirmResponse = (body: any) => {
     return { context: respcontext, orderDetails: order };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildStatusRequest = (body: any) => {
-  try{
+  try {
     const { orderDetails } = body;
     let context = buildRequestContext({
       domain: body?.context?.domain,
@@ -858,11 +894,11 @@ export const buildStatusRequest = (body: any) => {
     };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildStatusResponse = (body: any) => {
-  try{
+  try {
     const { context = {}, message = {} } = body?.responses[0];
     const respcontext = buildResponseContext(context);
     let order: any = {
@@ -964,11 +1000,11 @@ export const buildStatusResponse = (body: any) => {
     return { context: respcontext, order };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildCancelRequest = (body: any) => {
-  try{
+  try {
     const { orderDetails = {}, cancellationDetails = {} } = body;
     let message: any = {};
     let context = buildRequestContext({
@@ -1006,11 +1042,11 @@ export const buildCancelRequest = (body: any) => {
     };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildCancelResponse = (body: any) => {
-  try{
+  try {
     const { context = {}, message = {} } = body?.responses[0];
     const respcontext = buildResponseContext(context);
     let orderDetails: any = {
@@ -1118,11 +1154,11 @@ export const buildCancelResponse = (body: any) => {
     return { context: respcontext, orderDetails };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildSupportRequest = (body: any) => {
-  try{
+  try {
     const { orderDetails = {}, contactDetails = {} } = body;
     let message: any = {};
     let support: any = {};
@@ -1147,11 +1183,11 @@ export const buildSupportRequest = (body: any) => {
     };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildSupportResponse = (body: any) => {
-  try{
+  try {
     const { context = {}, message = {} } = body?.responses[0];
     const respcontext = buildResponseContext(context);
     let orderDetails: any = {
@@ -1169,11 +1205,11 @@ export const buildSupportResponse = (body: any) => {
     };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildRatingRequest = (body: any) => {
-  try{
+  try {
     const { ratingDetails = [] } = body;
 
     let context = buildRequestContext({
@@ -1197,11 +1233,11 @@ export const buildRatingRequest = (body: any) => {
     };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildRatingResponse = (body: any) => {
-  try{
+  try {
     const { context = {}, message = {} } = body?.responses[0];
     const respcontext = buildResponseContext(context);
     let feedbackForm: any = message?.feedback_form;
@@ -1209,11 +1245,11 @@ export const buildRatingResponse = (body: any) => {
     return { context: respcontext, message: { feedbackForm } };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildTrackRequest = (body: any) => {
-  try{
+  try {
     const { orderDetails = {}, callbackURL = "" } = body;
 
     let context = buildRequestContext({
@@ -1240,11 +1276,11 @@ export const buildTrackRequest = (body: any) => {
     };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildTrackResponse = (body: any) => {
-  try{
+  try {
     const { context = {}, message = {} } = body?.responses[0];
     const respcontext = buildResponseContext(context);
     let trackingDetails: any = {};
@@ -1263,11 +1299,11 @@ export const buildTrackResponse = (body: any) => {
     return { context: respcontext, trackingDetails };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildUpdateRequest = (body: any) => {
-  try{
+  try {
     const { orderDetails } = body;
     let context = buildRequestContext({
       domain: body?.context?.domain,
@@ -1277,7 +1313,7 @@ export const buildUpdateRequest = (body: any) => {
       bppId: body?.context?.bppId,
       bppUri: body?.context?.bppUri
     });
-    
+
     let order: any = {};
     if (orderDetails?.providerId) {
       order = {
@@ -1363,7 +1399,7 @@ export const buildUpdateRequest = (body: any) => {
       };
     }
 
-    if(orderDetails?.orderId){
+    if (orderDetails?.orderId) {
       order = {
         ...order,
         id: orderDetails?.orderId
@@ -1371,18 +1407,20 @@ export const buildUpdateRequest = (body: any) => {
     }
 
     return {
-      payload: { context, message: { 
-        update_target: orderDetails?.update_target,
-        order 
-      } }
+      payload: {
+        context, message: {
+          update_target: orderDetails?.update_target,
+          order
+        }
+      }
     };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
 
 export const buildUpdateResponse = (body: any) => {
-  try{
+  try {
     const { context = {}, message = {} } = body?.responses[0];
     const respcontext = buildResponseContext(context);
     let order: any = {};
@@ -1473,9 +1511,9 @@ export const buildUpdateResponse = (body: any) => {
         items
       };
     }
-    
-    if(message?.order?.fulfillments && !message?.order?.items[0]?.fulfillment_ids){
-      let fulfillments: any[] = message?.order?.fulfillments?.map((fulfillment: any) =>{
+
+    if (message?.order?.fulfillments && !message?.order?.items[0]?.fulfillment_ids) {
+      let fulfillments: any[] = message?.order?.fulfillments?.map((fulfillment: any) => {
         return {
           id: fulfillment?.id,
           type: fulfillment?.type,
@@ -1514,5 +1552,5 @@ export const buildUpdateResponse = (body: any) => {
     return { context: respcontext, orderDetails: order };
   } catch (error: any) {
     throw error;
-  }  
+  }
 };
