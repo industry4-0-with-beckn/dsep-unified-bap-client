@@ -1,4 +1,4 @@
-export interface MentoringContext {
+export interface Ind4assemblyContext {
   domain: string;
   action: string;
   bap_id: string;

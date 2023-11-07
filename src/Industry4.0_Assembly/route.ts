@@ -14,7 +14,7 @@ import {
 
 const router: Router = express.Router();
 
-export const mentorshipRoutes = () => {
+export const ind4assemblyRoutes = () => {
   router.post("/search", search); //done
   router.post("/select", select); //done
   router.post("/init", init); // done

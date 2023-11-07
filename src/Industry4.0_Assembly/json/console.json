@@ -1,0 +1,31 @@
+{
+    "context": {
+        "transaction_id": "1cbcbec7-077b-438d-83b9-8ce3a8e86748",
+        "domain": "dsep:courses",
+        "location": {
+            "city": {
+                "name": "Bangalore",
+                "code": "std:080"
+            },
+            "country": {
+                "name": "India",
+                "code": "IND"
+            }
+        },
+        "action": "search",
+        "version": "1.1.0",
+        "bap_id": "ps-bap-network.becknprotocol.io",
+        "bap_uri": "https://ps-bap-network.becknprotocol.io/",
+        "message_id": "872ab0a5-9ddd-415d-af0a-dfae5df43958",
+        "timestamp": "2023-11-07T10:31:30.422Z"
+    },
+    "message": {
+        "intent": {
+            "item": {
+                "descriptor": {
+                    "name": "assembly"
+                }
+            }
+        }
+    }
+}

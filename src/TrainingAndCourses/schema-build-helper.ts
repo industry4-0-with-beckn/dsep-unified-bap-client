@@ -19,7 +19,8 @@ export const buildContext = (input: any = {}) => {
 };
 
 export const buildSearchRequest = (input: any = {}) => {
-  const context = buildContext({ action: "search", category: "courses" });
+  const context = buildContext(
+    { action: "search", category: "courses" });
   const message: any = {
     intent: {}
   };
@@ -91,7 +92,8 @@ export const buildOnSearchMergedResponse = async (response: any = {}, body: any 
   return buildSearchResponse(response.searchRes, body, response?.itemRes?.[0]?.data?.courses, response?.itemRes?.[1]?.data?.courses);
 }
 
-export const buildSearchResponse = (response: any = {}, body: any = {}, savedItems = [], appliedItems = []) => {
+export const buildSearchResponse = (
+  response: any = {}, body: any = {}, savedItems = [], appliedItems = []) => {
   const inputs = response?.data?.responses;
 
   const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = inputs?.[0]?.context ?? {};
