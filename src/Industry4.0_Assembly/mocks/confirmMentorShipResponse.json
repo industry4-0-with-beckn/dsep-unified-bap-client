@@ -1,0 +1,72 @@
+{
+  "context": {
+    "domain": "dsep:mentoring",
+    "version": "1.0.0",
+    "action": "confirm",
+    "bap_id": "dsep-protocol.becknprotocol.io",
+    "bap_uri": "https://dsep-protocol-network.becknprotocol.io/",
+    "bpp_id": "dev.elevate-apis.shikshalokam.org/bpp",
+    "bpp_uri": "https://dev.elevate-apis.shikshalokam.org/bpp",
+    "transaction_id": "bdb5ba09-2241-4f00-b434-73466cd06228",
+    "message_id": "9c3a248b-5402-4edf-8ade-744af9df87fa",
+    "ttl": "PT10M",
+    "timestamp": "2023-02-16T11:12:36.396Z"
+  },
+  "responses": [
+    {
+      "context": {
+        "domain": "dsep:mentoring",
+        "action": "on_confirm",
+        "bap_id": "dsep-protocol.becknprotocol.io",
+        "bap_uri": "https://dsep-protocol-network.becknprotocol.io/",
+        "bpp_id": "dev.elevate-apis.shikshalokam.org/bpp",
+        "bpp_uri": "https://dev.elevate-apis.shikshalokam.org/bpp",
+        "timestamp": "2023-02-16T11:12:36.812Z",
+        "ttl": "PT10M",
+        "version": "1.0.0",
+        "message_id": "9c3a248b-5402-4edf-8ade-744af9df87fa",
+        "transaction_id": "bdb5ba09-2241-4f00-b434-73466cd06228"
+      },
+      "message": {
+        "order": {
+          "id": "7ab58f51-3150-4371-a2c8-d52b9171f6f6",
+          "fulfillments": [
+            {
+              "language": ["English"],
+              "id": "26f654d0-602a-4adb-b0a3-8dda6583d6dd",
+              "time": {
+                "range": {
+                  "start": "2023-02-19T23:23:16",
+                  "end": "2023-02-20T01:23:16"
+                },
+                "label": "Session Timing"
+              },
+              "type": "ONLINE",
+              "tags": [
+                {
+                  "display": true,
+                  "code": "joinLink",
+                  "name": "joinLink",
+                  "list": [
+                    {
+                      "code": "https://dev.elevate-apis.shikshalokam.org/dsep-mentoring/v1/sessions/join/63e629b823df08285693637f?user=63ee038d3049a6d24f70d748&name=Van%20Bode%20III",
+                      "name": "https://dev.elevate-apis.shikshalokam.org/dsep-mentoring/v1/sessions/join/63e629b823df08285693637f?user=63ee038d3049a6d24f70d748&name=Van%20Bode%20III"
+                    }
+                  ]
+                }
+              ],
+              "agent": {
+                "person": {
+                  "name": "joffin Mentor Twelve",
+                  "id": "63e5fa8762820fd9e6be9e21"
+                }
+              },
+              "tracking": false
+            }
+          ],
+          "type": "DEFAULT"
+        }
+      }
+    }
+  ]
+}
