@@ -4,7 +4,8 @@ import { MentoringContext } from "./schema";
 
 export const buildContext = (input: any = {}) => {
   const context: MentoringContext = {
-    domain: `${process.env.DOMAIN}${input?.category ?? "mentoring"}`,
+    // domain: `${process.env.DOMAIN}${input?.category ?? "mentoring"}`,
+    domain: input.domain,
     action: input.action ?? "",
     bap_id: process.env.BAP_ID || "",
     bap_uri: process.env.BAP_URI || "",
