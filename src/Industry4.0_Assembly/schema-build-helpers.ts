@@ -79,6 +79,7 @@ export const buildOnSearchMergedResponse = async (response: any = {}, body: any 
 
 export const buildSearchResponse = (
   response: any = {}, body: any = {}) => {
+    
   const inputs = response?.data?.responses;
 
   const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = inputs?.[0]?.context ?? {};
@@ -125,7 +126,7 @@ export const buildSearchResponse = (
         });
         items.push({
           id: item?.id,
-          descriptor: item?.descriptor?.name,
+          name: item?.descriptor?.name,
           category_id: item?.category_ids,
           fulfillment_id: item?.fulfillment_ids,
           tags,

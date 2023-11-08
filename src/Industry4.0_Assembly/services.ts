@@ -41,7 +41,6 @@ const axios = axiosInstance.create({
 export const searchMentorShipService = async (body: any): Promise<any> => {
   try {
     const { payload, optional } = buildSearchRequest(body);
-    console.log(JSON.stringify(payload));
 
     let searchResponse: any = {};
     if (mentorshipNetwork !== "local") {
@@ -65,6 +64,7 @@ export const searchMentorShipService = async (body: any): Promise<any> => {
       ])
         .then((res) => res)
         .catch((err) => null);
+        
       const res = { searchRes, itemRes };
       searchResponse = buildSearchResponse(
         searchRes,
