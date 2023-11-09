@@ -79,21 +79,27 @@ export const buildOnSearchMergedResponse = async (response: any = {}, body: any 
 
 export const buildSearchResponse = (
   response: any = {}, body: any = {}) => {
+
     
   const inputs = response?.data?.responses;
 
   const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = inputs?.[0]?.context ?? {};
   const context = { transactionId, messageId, bppId, bppUri };
 
+
+
   if (!inputs?.length)
     return { status: 200 };
+
+ 
+
 
   const serviceProviders: any[] = [];
   const categories: any[] = [];
   const items: any[] = [];
   const tags: any[] = [];
   const list: any[] = [];
-  inputs.map((input: any) => {
+  inputs.forEach((input: any) => {
     const { bpp_id: bppId, bpp_uri: bppUri }: any = input?.context ?? {};
     // const context = { bppId, bppUri };
 
@@ -108,6 +114,7 @@ export const buildSearchResponse = (
         });
       });
       provider?.items.forEach((item: any) => {
+
         item?.tags.forEach((tag: any) => {
           // tag?.list.forEach((list: any) => {
           //   list.push({
@@ -115,6 +122,9 @@ export const buildSearchResponse = (
           //     value: list?.value,
           //   });
           // });
+
+        
+
           tags.push({
             code: tag?.descriptor?.code,
             name: tag?.descriptor?.name,
@@ -136,6 +146,7 @@ export const buildSearchResponse = (
         });
         
       });
+
         serviceProviders.push({
           id: provider?.id,
           name: provider?.descriptor?.name,
@@ -147,7 +158,6 @@ export const buildSearchResponse = (
           categories,
           items,
         });
-     
     });
   })
   return { data: { context, serviceProviders } };

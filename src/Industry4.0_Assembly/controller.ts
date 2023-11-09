@@ -12,6 +12,7 @@ import {
 } from "./services";
 
 export const search = async (req: Request, res: Response) => {
+
   const { data, status = 200 } = await searchMentorShipService(req.body);
 
   return res.status(status).json(data);

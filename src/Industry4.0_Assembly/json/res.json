@@ -190,34 +190,3 @@
     }
 
 }
-
-
-providers?.forEach((provider: any) => {
-    provider?.categories.forEach((cat: any) => {
-      categories.push({
-        id: cat?.id,
-        code: cat?.descriptor?.code,
-        name: cat?.descriptor?.name,
-      })
-    });
-    provider?.items.forEach((item: any) => {
-      items.push({
-        id: item?.id,
-        descriptor: item?.descriptor?.name,
-        category_id: item?.category_ids,
-        fulfillment_id: item?.fulfillment_ids
-        
-    });
-      
-      serviceProviders.push({
-        id: provider?.id,
-        name: provider?.descriptor?.name,
-        short_desc: provider?.descriptor?.short_desc,
-        long_desc: provider?.descriptor?.long_desc,
-        images: provider?.descriptor?.images.map(
-          (img: any) => img?.url || ""
-        ),
-        categories,
-        items,
-        context
-      });

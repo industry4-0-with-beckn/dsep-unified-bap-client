@@ -42,8 +42,12 @@ export const searchMentorShipService = async (body: any): Promise<any> => {
   try {
     const { payload, optional } = buildSearchRequest(body);
 
+
     let searchResponse: any = {};
+    
     if (mentorshipNetwork !== "local") {
+    
+
       const headers = { "Content-Type": "application/JSON" };
       const searchRes = await axios.post(`${gatewayUrl}/search`, payload, {
         headers
@@ -73,6 +77,8 @@ export const searchMentorShipService = async (body: any): Promise<any> => {
         itemRes?.[1]?.data?.mentorship
       );
     } else {
+    
+
       searchResponse = buildSearchResponse(
         { data: searchMentorShipResp },
         body
