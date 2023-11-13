@@ -1,0 +1,16 @@
+
+        "provider": {
+            "locations": [
+                {
+                    "circle": {
+                        "gps": "30.876877, 73.868969",
+                        "radius": {
+                            "type": "CONSTANT",
+                            "value": "3",
+                            "unit": "miles"
+                        }
+                    }
+                }
+            ],
+            "rating": "gte>4"
+        }

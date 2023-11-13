@@ -41,6 +41,7 @@ const axios = axiosInstance.create({
 export const searchMentorShipService = async (body: any): Promise<any> => {
   try {
     const { payload, optional } = buildSearchRequest(body);
+    console.log(JSON.stringify(payload));
 
 
     let searchResponse: any = {};

@@ -3,9 +3,13 @@ import { v4 as uuid } from "uuid";
 import { Ind4assemblyContext } from "./schema";
 export const buildContext = (input: any = {}) => {
   const context: Ind4assemblyContext = {
-    // domain: `${process.env.DOMAIN}${input?.category ?? "mentoring"}`,
-    //domain: input.domain,
+    // domain: `${process.env.DOMAIN}${input?.domain /*?? "supply-chain-services:assembly"*/}`,
     domain: input.domain,
+    location: {
+      country: {
+        code: process.env.COUNTRY_CODE || ""
+      }
+    },
     action: input.action ?? "",
     bap_id: process.env.BAP_ID || "",
     bap_uri: process.env.BAP_URI || "",
@@ -17,28 +21,61 @@ export const buildContext = (input: any = {}) => {
     transaction_id: input?.transactionId ?? uuid()
   };
   return context;
+  
 };
 
+
 export const buildSearchRequest = (input: any = {}) => {
-  const context = buildContext(
-    { action: "search", domain: "supply-chain-services:assembly" });
+
+  const context = buildContext({ 
+    action: "search", 
+    
+    domain: "supply-chain-services:assembly"
+  });
+    // domain: `${input?.searchTitle ?? "supply-chain-services:assembly"}`});
   const message: any = {
     intent: {}
   };
-  let item: any = {};
-  let provider: any = {};
-  let category: any = {};
-  const optional: any = {};
-  
 
-  // if (input?.provider) {
-  //   provider = {
-  //     descriptor: {
-  //       name: input?.provider
-  //     }
-  //   };
-  // }
-  
+  let category: any = {};
+  let provider: any = {};
+  const locations: any= [];
+
+  const optional: any = {};
+
+// if(input?userLocation && input?.userRadiusvalue){
+//     const provider = {
+//     locations: {
+//       circle: {
+//         gps: input?.userLocation,
+//         radius: input?.userRadiustype,
+//         value: input?.userRadiusvalue,
+//         unit:input?.userRadiusunit
+//       }
+//     },
+//   }
+// }
+if (input?.userLocation && input?.userRadiustype && input?.userRadiusvalue && input?.userRadiusunit) {
+  provider = {
+    locations: [
+      {
+        circle: {
+          gps: input?.userLocation
+          radius: {
+            type: input?.userRadiustype,
+            value: input?.userRadiusvalue,
+            unit: input?.userRadiusunit
+          }
+        } 
+
+      }
+    ]
+  };
+
+
+}
+
+
   if (input?.searchTitle) {
     category = {
       descriptor: {
@@ -47,34 +84,38 @@ export const buildSearchRequest = (input: any = {}) => {
     };
   }
 
-  // if (Object.keys(item).length) {
-  //   message.intent = {
-  //     ...message.intent,
-  //     item
-  //   };
-  // }
-  // if (Object.keys(provider).length) {
-  //   message.intent = {
-  //     ...message.intent,
-  //     provider
-  //   };
-  // }
+  if (Object.keys(provider).length) {
+    message.intent = {
+      ...message.intent,
+      provider
+    };
+  }
+
   if (Object.keys(category).length) {
     message.intent = {
       ...message.intent,
       category
     };
   }
+
+  
+
   if (input?.loggedInUserEmail) {
     optional.user = { "email": input?.loggedInUserEmail };
   }
 
-  return { payload: { context, message }, optional };
+  //return { payload: { context, message }, optional };
+  return { payload: { context, message } };
+
+  
 };
+
 
 export const buildOnSearchMergedResponse = async (response: any = {}, body: any = {}) => {
   // let savedAppliedResult = response?.itemRes ? await buildSavedAppliedCategoryResponse(response.itemRes[0], response.itemRes[1]) : null;
-  return buildSearchResponse(response.searchRes, body, response?.itemRes?.[0]?.data?.courses, response?.itemRes?.[1]?.data?.courses);
+  return buildSearchResponse(response.searchRes, body);
+
+  // return buildSearchResponse(response.searchRes, body, response?.itemRes?.[0]?.data?.courses, response?.itemRes?.[1]?.data?.courses);
 }
 
 export const buildSearchResponse = (
@@ -90,9 +131,6 @@ export const buildSearchResponse = (
 
   if (!inputs?.length)
     return { status: 200 };
-
- 
-
 
   const serviceProviders: any[] = [];
   const categories: any[] = [];
@@ -116,15 +154,6 @@ export const buildSearchResponse = (
       provider?.items.forEach((item: any) => {
 
         item?.tags.forEach((tag: any) => {
-          // tag?.list.forEach((list: any) => {
-          //   list.push({
-          //     name: list?.descriptor?.name,
-          //     value: list?.value,
-          //   });
-          // });
-
-        
-
           tags.push({
             code: tag?.descriptor?.code,
             name: tag?.descriptor?.name,

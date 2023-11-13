@@ -1,5 +1,10 @@
 export interface Ind4assemblyContext {
   domain: string;
+  location: {
+    country: {      
+      code: string;
+    };
+  };
   action: string;
   bap_id: string;
   bap_uri: string;
