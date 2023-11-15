@@ -3,8 +3,8 @@ import { v4 as uuid } from "uuid";
 import { Ind4assemblyContext } from "./schema";
 export const buildContext = (input: any = {}) => {
   const context: Ind4assemblyContext = {
-    // domain: `${process.env.DOMAIN}${input?.domain /*?? "supply-chain-services:assembly"*/}`,
-    domain: input.domain,
+    domain: `${process.env.DOMAIN}${input?.searchTitle /*?? "supply-chain-services:assembly"*/}`,
+    // domain: input.domain,
     location: {
       country: {
         code: process.env.COUNTRY_CODE || ""
@@ -29,8 +29,8 @@ export const buildSearchRequest = (input: any = {}) => {
 
   const context = buildContext({ 
     action: "search", 
-    
-    domain: "supply-chain-services:assembly"
+    domain: input?.domain
+    // domain: "supply-chain-services:assembly"
   });
     // domain: `${input?.searchTitle ?? "supply-chain-services:assembly"}`});
   const message: any = {
