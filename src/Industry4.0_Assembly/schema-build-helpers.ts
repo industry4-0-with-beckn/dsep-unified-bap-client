@@ -43,24 +43,12 @@ export const buildSearchRequest = (input: any = {}) => {
 
   const optional: any = {};
 
-// if(input?userLocation && input?.userRadiusvalue){
-//     const provider = {
-//     locations: {
-//       circle: {
-//         gps: input?.userLocation,
-//         radius: input?.userRadiustype,
-//         value: input?.userRadiusvalue,
-//         unit:input?.userRadiusunit
-//       }
-//     },
-//   }
-// }
 if (input?.userLocation && input?.userRadiustype && input?.userRadiusvalue && input?.userRadiusunit) {
   provider = {
     locations: [
       {
         circle: {
-          gps: input?.userLocation
+          gps: input?.userLocation,
           radius: {
             type: input?.userRadiustype,
             value: input?.userRadiusvalue,
