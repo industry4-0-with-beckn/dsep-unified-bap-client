@@ -3,7 +3,8 @@ import { v4 as uuid } from "uuid";
 import { Ind4assemblyContext } from "./schema";
 export const buildContext = (input: any = {}) => {
   const context: Ind4assemblyContext = {
-    domain: `${process.env.DOMAIN}${input?.searchTitle /*?? "supply-chain-services:assembly"*/}`,
+    domain: `${process.env.DOMAIN}assembly`,
+    
     // domain: input.domain,
     location: {
       country: {
@@ -20,8 +21,8 @@ export const buildContext = (input: any = {}) => {
     ttl: "PT10M", // ask Ajay for its significance
     transaction_id: input?.transactionId ?? uuid()
   };
+
   return context;
-  
 };
 
 
@@ -43,7 +44,7 @@ export const buildSearchRequest = (input: any = {}) => {
 
   const optional: any = {};
 
-if (input?.userLocation && input?.userRadiustype && input?.userRadiusvalue && input?.userRadiusunit) {
+if (input?.userLocation || input?.userRadiustype || input?.userRadiusvalue || input?.userRadiusunit) {
   provider = {
     locations: [
       {
@@ -52,12 +53,13 @@ if (input?.userLocation && input?.userRadiustype && input?.userRadiusvalue && in
           radius: {
             type: input?.userRadiustype,
             value: input?.userRadiusvalue,
-            unit: input?.userRadiusunit
+            unit: input?.userRadiusunit,
           }
         } 
 
       }
-    ]
+    ],
+    rating: input?.userRating,
   };
 
 
@@ -111,7 +113,6 @@ export const buildSearchResponse = (
 
     
   const inputs = response?.data?.responses;
-
   const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = inputs?.[0]?.context ?? {};
   const context = { transactionId, messageId, bppId, bppUri };
 
@@ -124,7 +125,7 @@ export const buildSearchResponse = (
   const categories: any[] = [];
   const items: any[] = [];
   const tags: any[] = [];
-  const list: any[] = [];
+  const location: any[] = [];
   inputs.forEach((input: any) => {
     const { bpp_id: bppId, bpp_uri: bppUri }: any = input?.context ?? {};
     // const context = { bppId, bppUri };
@@ -149,8 +150,8 @@ export const buildSearchResponse = (
             display: tag?.display,
 
           });
-
         });
+        
         items.push({
           id: item?.id,
           name: item?.descriptor?.name,
@@ -163,6 +164,13 @@ export const buildSearchResponse = (
         });
         
       });
+      provider?.location?.forEach((loc: any) => {
+        location.push({
+          code : loc?.city?.code,
+          name: loc?.city?.name,
+          gps: loc?.gps,
+        })
+      });
 
         serviceProviders.push({
           id: provider?.id,
@@ -174,6 +182,8 @@ export const buildSearchResponse = (
           ),
           categories,
           items,
+          location,
+          rating: provider?.rating,
         });
     });
   })
