@@ -1,144 +1,193 @@
 import moment from "moment";
 import { v4 as uuid } from "uuid";
-import { ITrainingNetworkContext } from "./schema";
+import { Ind4assemblyContext } from "./schema";
 export const buildContext = (input: any = {}) => {
-  const context: ITrainingNetworkContext = {
-    transaction_id: input?.transactionId ?? uuid(),
-    domain: `${process.env.DOMAIN}${input?.category ?? "courses"}`,
-    location: { city: { name: process.env.CITY || (input?.city ?? ""), code: process.env.CITY_CODE || (input?.cityCode ?? "") }, country: { name: process.env.COUNTRY || (input?.country ?? ""), code: process.env.COUNTRY_CODE || (input?.countryCode ?? "") } },
+  const context: Ind4assemblyContext = {
+    domain: `${process.env.DOMAIN}assembly`,
+    
+    // domain: input.domain,
+    location: {
+      country: {
+        code: process.env.COUNTRY_CODE || ""
+      }
+    },
     action: input.action ?? "",
-    version: `${process.env.CORE_VERSION || (input?.core_version ?? "")}`,
-    bap_id: process.env.BAP_ID || (input?.bapId ?? ""),
-    bap_uri: process.env.BAP_URI || (input?.bapUri ?? ""),
-    bpp_id: input?.bppId,
-    bpp_uri: input?.bppUri,
+    bap_id: process.env.BAP_ID || "",
+    bap_uri: process.env.BAP_URI || "",
+    timestamp: input.timestamp ?? moment().toISOString(),
+
     message_id: input?.messageId ?? uuid(),
-    timestamp: input.timestamp ?? moment().toISOString()
+    version: process.env.CORE_VERSION || (input?.core_version ?? ""),
+    ttl: "PT10M", // ask Ajay for its significance
+    transaction_id: input?.transactionId ?? uuid()
   };
+
   return context;
 };
 
+
 export const buildSearchRequest = (input: any = {}) => {
-  const context = buildContext(
-    { action: "search", category: "courses" });
+
+  const context = buildContext({ 
+    action: "search", 
+    domain: input?.domain
+    // domain: "supply-chain-services:assembly"
+  });
+    // domain: `${input?.searchTitle ?? "supply-chain-services:assembly"}`});
   const message: any = {
     intent: {}
   };
-  let item: any = {};
-  let provider: any = {};
+
   let category: any = {};
+  let provider: any = {};
+  const locations: any= [];
+
   const optional: any = {};
-  if (input?.category) {
+
+if (input?.userLocation || input?.userRadiustype || input?.userRadiusvalue || input?.userRadiusunit) {
+  provider = {
+    locations: [
+      {
+        circle: {
+          gps: input?.userLocation,
+          radius: {
+            type: input?.userRadiustype,
+            value: input?.userRadiusvalue,
+            unit: input?.userRadiusunit,
+          }
+        } 
+
+      }
+    ],
+    rating: input?.userRating,
+  };
+
+
+}
+
+
+  if (input?.searchTitle) {
     category = {
       descriptor: {
-        name: input?.category
+        code: input?.searchTitle
       }
     };
   }
 
-  if (input?.provider) {
-    provider = {
-      descriptor: {
-        name: input?.provider
-      }
-    };
-  }
-  if (input?.deepSearch && input?.deepSearch.length) {
-    item.tags = [];
-    item.tags = input?.deepSearch.map((query: any) => {
-      return {
-        display: false,
-        name: query?.searchCriteria,
-        list: query?.searchParameters
-      };
-    });
-  }
-  if (input?.searchTitle) {
-    item = {
-      ...item,
-      descriptor: {
-        name: input?.searchTitle
-      }
-    };
-  }
-
-  if (Object.keys(item).length) {
-    message.intent = {
-      ...message.intent,
-      item
-    };
-  }
   if (Object.keys(provider).length) {
     message.intent = {
       ...message.intent,
       provider
     };
   }
+
   if (Object.keys(category).length) {
     message.intent = {
       ...message.intent,
       category
     };
   }
+
+  
+
   if (input?.loggedInUserEmail) {
     optional.user = { "email": input?.loggedInUserEmail };
   }
 
-  return { payload: { context, message }, optional };
+  //return { payload: { context, message }, optional };
+  return { payload: { context, message } };
+
+  
 };
 
+
 export const buildOnSearchMergedResponse = async (response: any = {}, body: any = {}) => {
-  let savedAppliedResult = response?.itemRes ? await buildSavedAppliedCategoryResponse(response.itemRes[0], response.itemRes[1]) : null;
-  return buildSearchResponse(response.searchRes, body, response?.itemRes?.[0]?.data?.courses, response?.itemRes?.[1]?.data?.courses);
+  // let savedAppliedResult = response?.itemRes ? await buildSavedAppliedCategoryResponse(response.itemRes[0], response.itemRes[1]) : null;
+  return buildSearchResponse(response.searchRes, body);
+
+  // return buildSearchResponse(response.searchRes, body, response?.itemRes?.[0]?.data?.courses, response?.itemRes?.[1]?.data?.courses);
 }
 
 export const buildSearchResponse = (
-  response: any = {}, body: any = {}, savedItems = [], appliedItems = []) => {
-  const inputs = response?.data?.responses;
+  response: any = {}, body: any = {}) => {
 
+    
+  const inputs = response?.data?.responses;
   const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = inputs?.[0]?.context ?? {};
   const context = { transactionId, messageId, bppId, bppUri };
+
+
 
   if (!inputs?.length)
     return { status: 200 };
 
-  const courses: any[] = [];
-  inputs.map((input: any) => {
+  const serviceProviders: any[] = [];
+  const categories: any[] = [];
+  const items: any[] = [];
+  const tags: any[] = [];
+  const location: any[] = [];
+  inputs.forEach((input: any) => {
     const { bpp_id: bppId, bpp_uri: bppUri }: any = input?.context ?? {};
-    const context = { bppId, bppUri };
+    // const context = { bppId, bppUri };
 
     const providers = input?.message?.catalog?.providers;
 
     providers?.forEach((provider: any) => {
-      provider?.items.forEach((item: any) => {
-        const categoryFound: any = provider?.categories.find(
-          (category: any) => category?.id === item.category_id
-        );
-        courses.push({
-          id: item?.id,
-          name: item?.descriptor?.name,
-          description: item?.descriptor?.long_desc,
-          userSavedItem: !!(savedItems?.find((savedItem: any) => savedItem?.course_id == item?.id)),
-          userAppliedItem: !!(appliedItems?.find((appliedItem: any) => appliedItem?.course_id == item?.id)),
-          imageLocations: item?.descriptor?.images.map(
-            (img: any) => img?.url || ""
-          ),
-          duration: item?.time?.duration,
-          provider: {
-            id: provider?.id,
-            name: provider?.descriptor?.name,
-            description: provider?.descriptor?.name
-          },
-          category: {
-            id: categoryFound ? categoryFound?.id : "",
-            name: categoryFound ? categoryFound?.descriptor?.name : ""
-          },
-          context
+      provider?.categories.forEach((cat: any) => {
+        categories.push({
+          id: cat?.id,
+          code: cat?.descriptor?.code,
+          name: cat?.descriptor?.name,
         });
       });
+      provider?.items.forEach((item: any) => {
+
+        item?.tags.forEach((tag: any) => {
+          tags.push({
+            code: tag?.descriptor?.code,
+            name: tag?.descriptor?.name,
+            // list,
+            display: tag?.display,
+
+          });
+        });
+        
+        items.push({
+          id: item?.id,
+          name: item?.descriptor?.name,
+          category_id: item?.category_ids,
+          fulfillment_id: item?.fulfillment_ids,
+          tags,
+          currency: item?.price?.currency,
+          value: item?.price?.value,
+
+        });
+        
+      });
+      provider?.location?.forEach((loc: any) => {
+        location.push({
+          code : loc?.city?.code,
+          name: loc?.city?.name,
+          gps: loc?.gps,
+        })
+      });
+
+        serviceProviders.push({
+          id: provider?.id,
+          name: provider?.descriptor?.name,
+          short_desc: provider?.descriptor?.short_desc,
+          long_desc: provider?.descriptor?.long_desc,
+          images: provider?.descriptor?.images.map(
+            (img: any) => img?.url || ""
+          ),
+          categories,
+          items,
+          location,
+          rating: provider?.rating,
+        });
     });
   })
-  return { data: { context, courses } };
+  return { data: { context, serviceProviders } };
 };
 
 export const buildSavedAppliedCategoryResponse = (savedResponse: any = {}, appliedResponse: any = {}) => {

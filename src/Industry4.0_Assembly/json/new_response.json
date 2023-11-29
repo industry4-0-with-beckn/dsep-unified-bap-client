@@ -1,0 +1,1025 @@
+{
+    "context": {
+        "transactionId": "6402662e-4d23-431f-a9fa-53d4fc50ebe5",
+        "messageId": "e4243fa8-c379-4885-b7fd-55febc2a3f42",
+        "bppId": "bpp.supply-chain.makerspace.io",
+        "bppUri": "https://bpp.supply-chain.makerspace.io"
+    },
+    "serviceProviders": [
+        {
+            "id": "1",
+            "name": "Makerspace",
+            "short_desc": "Makerspace",
+            "long_desc": "Makerspace, Hof.",
+            "images": [
+                "https://makerspace/assembly/makerspace_logo.png"
+            ],
+            "categories": [
+                {
+                    "id": "p2",
+                    "code": "assembly",
+                    "name": "Assembly"
+                },
+                {
+                    "id": "p2c1",
+                    "code": "classic",
+                    "name": "Classic"
+                },
+                {
+                    "id": "p2c2",
+                    "code": "automated",
+                    "name": "Automated"
+                },
+                {
+                    "id": "p2c3",
+                    "code": "intermittent",
+                    "name": "Intermittent"
+                },
+                {
+                    "id": "p2c4",
+                    "code": "lean",
+                    "name": "Lean"
+                },
+                {
+                    "id": "6",
+                    "code": "AS-6",
+                    "name": "Automotive Assmebly"
+                },
+                {
+                    "id": "7",
+                    "code": "AS-6",
+                    "name": "Car-Engine-Assembly"
+                },
+                {
+                    "id": "8",
+                    "code": "AS-7",
+                    "name": "Printed Circuit Board"
+                },
+                {
+                    "id": "2",
+                    "code": "AS-2",
+                    "name": "Automated-Assembly"
+                }
+            ],
+            "items": [
+                {
+                    "id": "66b7b9bad166-4a3f-ada6-ca063dc9d321",
+                    "name": "Intermittent assembly type",
+                    "category_id": [
+                        "c3"
+                    ],
+                    "fulfillment_id": [
+                        "f1"
+                    ],
+                    "tags": [
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "assembly-info",
+                            "name": "Assembly Information",
+                            "display": true
+                        },
+                        {
+                            "code": "scale-info",
+                            "name": "Scale Information",
+                            "display": true
+                        },
+                        {
+                            "code": "printer-info",
+                            "name": "Printer Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        }
+                    ],
+                    "currency": "EUR",
+                    "value": "starting from 50 EUR"
+                },
+                {
+                    "id": "3",
+                    "name": "Brake-System Assembly",
+                    "tags": [
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "assembly-info",
+                            "name": "Assembly Information",
+                            "display": true
+                        },
+                        {
+                            "code": "scale-info",
+                            "name": "Scale Information",
+                            "display": true
+                        },
+                        {
+                            "code": "printer-info",
+                            "name": "Printer Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        }
+                    ],
+                    "currency": "EUR",
+                    "value": "starting from 580 EUR"
+                },
+                {
+                    "id": "4",
+                    "name": "Car-Engine_Assembly",
+                    "tags": [
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "assembly-info",
+                            "name": "Assembly Information",
+                            "display": true
+                        },
+                        {
+                            "code": "scale-info",
+                            "name": "Scale Information",
+                            "display": true
+                        },
+                        {
+                            "code": "printer-info",
+                            "name": "Printer Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        }
+                    ],
+                    "currency": "EUR",
+                    "value": "starting from 700 EUR"
+                },
+                {
+                    "id": "5",
+                    "name": "Circuit Board Assembly",
+                    "tags": [
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "assembly-info",
+                            "name": "Assembly Information",
+                            "display": true
+                        },
+                        {
+                            "code": "scale-info",
+                            "name": "Scale Information",
+                            "display": true
+                        },
+                        {
+                            "code": "printer-info",
+                            "name": "Printer Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        }
+                    ],
+                    "currency": "EUR",
+                    "value": "starting from 150 EUR"
+                }
+            ],
+            "location": [
+                {
+                    "code": 95185,
+                    "name": "Gattendorf",
+                    "gps": "50.320078204305375, 11.986483311054558"
+                },
+                {
+                    "code": 95028,
+                    "name": "Dohlau",
+                    "gps": "50.281718228619184, 11.942483786225266"
+                },
+                {
+                    "code": 95189,
+                    "name": "Köditz",
+                    "gps": "50.33172816551412, 11.84679509483352"
+                }
+            ]
+        },
+        {
+            "id": "7",
+            "name": "ABS-Assembly",
+            "short_desc": "Assembly",
+            "long_desc": "Automotive assembly service",
+            "images": [
+                "https://c8.alamy.com/comp/W9CP75/chinese-factory-workers-assemble-a-byd-car-on-the-production-line-at-the-auto-plant-and-headquarters-of-byd-company-limited-and-shenzhen-byd-auto-co-W9CP75.jpg"
+            ],
+            "categories": [
+                {
+                    "id": "p2",
+                    "code": "assembly",
+                    "name": "Assembly"
+                },
+                {
+                    "id": "p2c1",
+                    "code": "classic",
+                    "name": "Classic"
+                },
+                {
+                    "id": "p2c2",
+                    "code": "automated",
+                    "name": "Automated"
+                },
+                {
+                    "id": "p2c3",
+                    "code": "intermittent",
+                    "name": "Intermittent"
+                },
+                {
+                    "id": "p2c4",
+                    "code": "lean",
+                    "name": "Lean"
+                },
+                {
+                    "id": "6",
+                    "code": "AS-6",
+                    "name": "Automotive Assmebly"
+                },
+                {
+                    "id": "7",
+                    "code": "AS-6",
+                    "name": "Car-Engine-Assembly"
+                },
+                {
+                    "id": "8",
+                    "code": "AS-7",
+                    "name": "Printed Circuit Board"
+                },
+                {
+                    "id": "2",
+                    "code": "AS-2",
+                    "name": "Automated-Assembly"
+                }
+            ],
+            "items": [
+                {
+                    "id": "66b7b9bad166-4a3f-ada6-ca063dc9d321",
+                    "name": "Intermittent assembly type",
+                    "category_id": [
+                        "c3"
+                    ],
+                    "fulfillment_id": [
+                        "f1"
+                    ],
+                    "tags": [
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "assembly-info",
+                            "name": "Assembly Information",
+                            "display": true
+                        },
+                        {
+                            "code": "scale-info",
+                            "name": "Scale Information",
+                            "display": true
+                        },
+                        {
+                            "code": "printer-info",
+                            "name": "Printer Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        }
+                    ],
+                    "currency": "EUR",
+                    "value": "starting from 50 EUR"
+                },
+                {
+                    "id": "3",
+                    "name": "Brake-System Assembly",
+                    "tags": [
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "assembly-info",
+                            "name": "Assembly Information",
+                            "display": true
+                        },
+                        {
+                            "code": "scale-info",
+                            "name": "Scale Information",
+                            "display": true
+                        },
+                        {
+                            "code": "printer-info",
+                            "name": "Printer Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        }
+                    ],
+                    "currency": "EUR",
+                    "value": "starting from 580 EUR"
+                },
+                {
+                    "id": "4",
+                    "name": "Car-Engine_Assembly",
+                    "tags": [
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "assembly-info",
+                            "name": "Assembly Information",
+                            "display": true
+                        },
+                        {
+                            "code": "scale-info",
+                            "name": "Scale Information",
+                            "display": true
+                        },
+                        {
+                            "code": "printer-info",
+                            "name": "Printer Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        }
+                    ],
+                    "currency": "EUR",
+                    "value": "starting from 700 EUR"
+                },
+                {
+                    "id": "5",
+                    "name": "Circuit Board Assembly",
+                    "tags": [
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "assembly-info",
+                            "name": "Assembly Information",
+                            "display": true
+                        },
+                        {
+                            "code": "scale-info",
+                            "name": "Scale Information",
+                            "display": true
+                        },
+                        {
+                            "code": "printer-info",
+                            "name": "Printer Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        }
+                    ],
+                    "currency": "EUR",
+                    "value": "starting from 150 EUR"
+                }
+            ],
+            "location": [
+                {
+                    "code": 95185,
+                    "name": "Gattendorf",
+                    "gps": "50.320078204305375, 11.986483311054558"
+                },
+                {
+                    "code": 95028,
+                    "name": "Dohlau",
+                    "gps": "50.281718228619184, 11.942483786225266"
+                },
+                {
+                    "code": 95189,
+                    "name": "Köditz",
+                    "gps": "50.33172816551412, 11.84679509483352"
+                }
+            ],
+            "rating": "4.0"
+        },
+        {
+            "id": "10",
+            "name": "Wirth-Werkzeugbau",
+            "short_desc": "Automotive parts",
+            "long_desc": "Seit 1989 Ihr Partner für innovative Lösungen in Werkzeugbau und Kunststofftechnik",
+            "images": [
+                "https://werkzeugbau-wirth.de/wp-content/uploads/2021/06/cropped-cropped-Wirth-Logo-2.png"
+            ],
+            "categories": [
+                {
+                    "id": "p2",
+                    "code": "assembly",
+                    "name": "Assembly"
+                },
+                {
+                    "id": "p2c1",
+                    "code": "classic",
+                    "name": "Classic"
+                },
+                {
+                    "id": "p2c2",
+                    "code": "automated",
+                    "name": "Automated"
+                },
+                {
+                    "id": "p2c3",
+                    "code": "intermittent",
+                    "name": "Intermittent"
+                },
+                {
+                    "id": "p2c4",
+                    "code": "lean",
+                    "name": "Lean"
+                },
+                {
+                    "id": "6",
+                    "code": "AS-6",
+                    "name": "Automotive Assmebly"
+                },
+                {
+                    "id": "7",
+                    "code": "AS-6",
+                    "name": "Car-Engine-Assembly"
+                },
+                {
+                    "id": "8",
+                    "code": "AS-7",
+                    "name": "Printed Circuit Board"
+                },
+                {
+                    "id": "2",
+                    "code": "AS-2",
+                    "name": "Automated-Assembly"
+                }
+            ],
+            "items": [
+                {
+                    "id": "66b7b9bad166-4a3f-ada6-ca063dc9d321",
+                    "name": "Intermittent assembly type",
+                    "category_id": [
+                        "c3"
+                    ],
+                    "fulfillment_id": [
+                        "f1"
+                    ],
+                    "tags": [
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "assembly-info",
+                            "name": "Assembly Information",
+                            "display": true
+                        },
+                        {
+                            "code": "scale-info",
+                            "name": "Scale Information",
+                            "display": true
+                        },
+                        {
+                            "code": "printer-info",
+                            "name": "Printer Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        }
+                    ],
+                    "currency": "EUR",
+                    "value": "starting from 50 EUR"
+                },
+                {
+                    "id": "3",
+                    "name": "Brake-System Assembly",
+                    "tags": [
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "assembly-info",
+                            "name": "Assembly Information",
+                            "display": true
+                        },
+                        {
+                            "code": "scale-info",
+                            "name": "Scale Information",
+                            "display": true
+                        },
+                        {
+                            "code": "printer-info",
+                            "name": "Printer Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        }
+                    ],
+                    "currency": "EUR",
+                    "value": "starting from 580 EUR"
+                },
+                {
+                    "id": "4",
+                    "name": "Car-Engine_Assembly",
+                    "tags": [
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "assembly-info",
+                            "name": "Assembly Information",
+                            "display": true
+                        },
+                        {
+                            "code": "scale-info",
+                            "name": "Scale Information",
+                            "display": true
+                        },
+                        {
+                            "code": "printer-info",
+                            "name": "Printer Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        }
+                    ],
+                    "currency": "EUR",
+                    "value": "starting from 700 EUR"
+                },
+                {
+                    "id": "5",
+                    "name": "Circuit Board Assembly",
+                    "tags": [
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "assembly-info",
+                            "name": "Assembly Information",
+                            "display": true
+                        },
+                        {
+                            "code": "scale-info",
+                            "name": "Scale Information",
+                            "display": true
+                        },
+                        {
+                            "code": "printer-info",
+                            "name": "Printer Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        }
+                    ],
+                    "currency": "EUR",
+                    "value": "starting from 150 EUR"
+                }
+            ],
+            "location": [
+                {
+                    "code": 95185,
+                    "name": "Gattendorf",
+                    "gps": "50.320078204305375, 11.986483311054558"
+                },
+                {
+                    "code": 95028,
+                    "name": "Dohlau",
+                    "gps": "50.281718228619184, 11.942483786225266"
+                },
+                {
+                    "code": 95189,
+                    "name": "Köditz",
+                    "gps": "50.33172816551412, 11.84679509483352"
+                }
+            ],
+            "rating": "4.5"
+        },
+        {
+            "id": "11",
+            "name": "PCBA-Assembly",
+            "short_desc": "Assembly",
+            "long_desc": "Printed Circuit Board Assemblies",
+            "images": [
+                "https://i.ytimg.com/vi/Ugixh3Ngr5E/sddefault.jpg"
+            ],
+            "categories": [
+                {
+                    "id": "p2",
+                    "code": "assembly",
+                    "name": "Assembly"
+                },
+                {
+                    "id": "p2c1",
+                    "code": "classic",
+                    "name": "Classic"
+                },
+                {
+                    "id": "p2c2",
+                    "code": "automated",
+                    "name": "Automated"
+                },
+                {
+                    "id": "p2c3",
+                    "code": "intermittent",
+                    "name": "Intermittent"
+                },
+                {
+                    "id": "p2c4",
+                    "code": "lean",
+                    "name": "Lean"
+                },
+                {
+                    "id": "6",
+                    "code": "AS-6",
+                    "name": "Automotive Assmebly"
+                },
+                {
+                    "id": "7",
+                    "code": "AS-6",
+                    "name": "Car-Engine-Assembly"
+                },
+                {
+                    "id": "8",
+                    "code": "AS-7",
+                    "name": "Printed Circuit Board"
+                },
+                {
+                    "id": "2",
+                    "code": "AS-2",
+                    "name": "Automated-Assembly"
+                }
+            ],
+            "items": [
+                {
+                    "id": "66b7b9bad166-4a3f-ada6-ca063dc9d321",
+                    "name": "Intermittent assembly type",
+                    "category_id": [
+                        "c3"
+                    ],
+                    "fulfillment_id": [
+                        "f1"
+                    ],
+                    "tags": [
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "assembly-info",
+                            "name": "Assembly Information",
+                            "display": true
+                        },
+                        {
+                            "code": "scale-info",
+                            "name": "Scale Information",
+                            "display": true
+                        },
+                        {
+                            "code": "printer-info",
+                            "name": "Printer Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        }
+                    ],
+                    "currency": "EUR",
+                    "value": "starting from 50 EUR"
+                },
+                {
+                    "id": "3",
+                    "name": "Brake-System Assembly",
+                    "tags": [
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "assembly-info",
+                            "name": "Assembly Information",
+                            "display": true
+                        },
+                        {
+                            "code": "scale-info",
+                            "name": "Scale Information",
+                            "display": true
+                        },
+                        {
+                            "code": "printer-info",
+                            "name": "Printer Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        }
+                    ],
+                    "currency": "EUR",
+                    "value": "starting from 580 EUR"
+                },
+                {
+                    "id": "4",
+                    "name": "Car-Engine_Assembly",
+                    "tags": [
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "assembly-info",
+                            "name": "Assembly Information",
+                            "display": true
+                        },
+                        {
+                            "code": "scale-info",
+                            "name": "Scale Information",
+                            "display": true
+                        },
+                        {
+                            "code": "printer-info",
+                            "name": "Printer Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        }
+                    ],
+                    "currency": "EUR",
+                    "value": "starting from 700 EUR"
+                },
+                {
+                    "id": "5",
+                    "name": "Circuit Board Assembly",
+                    "tags": [
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "assembly-info",
+                            "name": "Assembly Information",
+                            "display": true
+                        },
+                        {
+                            "code": "scale-info",
+                            "name": "Scale Information",
+                            "display": true
+                        },
+                        {
+                            "code": "printer-info",
+                            "name": "Printer Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        },
+                        {
+                            "code": "product-info",
+                            "name": "Product Information",
+                            "display": true
+                        }
+                    ],
+                    "currency": "EUR",
+                    "value": "starting from 150 EUR"
+                }
+            ],
+            "location": [
+                {
+                    "code": 95185,
+                    "name": "Gattendorf",
+                    "gps": "50.320078204305375, 11.986483311054558"
+                },
+                {
+                    "code": 95028,
+                    "name": "Dohlau",
+                    "gps": "50.281718228619184, 11.942483786225266"
+                },
+                {
+                    "code": 95189,
+                    "name": "Köditz",
+                    "gps": "50.33172816551412, 11.84679509483352"
+                }
+            ],
+            "rating": "4.2"
+        }
+    ]
+}

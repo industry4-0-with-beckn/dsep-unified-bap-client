@@ -6,6 +6,7 @@ import { scholarshipsRoutes } from "./ScholarshipsAndGrants/route";
 import { trainingRoutes } from "./TrainingAndCourses/route";
 import cors from "cors";
 import { DHProutes } from "./DHP";
+import { ind4assemblyRoutes } from "./Industry4.0_Assembly";
 dotenv.config();
 
 const app: Express = express();
@@ -39,6 +40,7 @@ app.use(express.json());
 
 app.use("/job", jobRoutes());
 
+app.use("/assembly", ind4assemblyRoutes())
 app.use("/scholarship", scholarshipsRoutes());
 app.use("/mentorship", mentorshipRoutes());
 app.use("/course", trainingRoutes());

@@ -1,0 +1,38 @@
+{
+  "context": {
+    "domain": "dsep:mentoring",
+    "version": "1.0.0",
+    "action": "cancel",
+    "bap_id": "dsep-protocol.becknprotocol.io",
+    "bap_uri": "https://dsep-protocol-network.becknprotocol.io/",
+    "bpp_id": "dev.elevate-apis.shikshalokam.org/bpp",
+    "bpp_uri": "https://dev.elevate-apis.shikshalokam.org/bpp",
+    "transaction_id": "bdb5ba09-2241-4f00-b434-73466cd06228",
+    "message_id": "b5305660-b4d6-4200-8e28-631070242549",
+    "ttl": "PT10M",
+    "timestamp": "2023-02-16T10:38:06.634Z"
+  },
+  "responses": [
+    {
+      "context": {
+        "domain": "dsep:mentoring",
+        "action": "on_cancel",
+        "bap_id": "dsep-protocol.becknprotocol.io",
+        "bap_uri": "https://dsep-protocol-network.becknprotocol.io/",
+        "bpp_id": "dev.elevate-apis.shikshalokam.org/bpp",
+        "bpp_uri": "https://dev.elevate-apis.shikshalokam.org/bpp",
+        "timestamp": "2023-02-16T10:38:06.854Z",
+        "ttl": "PT10M",
+        "version": "1.0.0",
+        "message_id": "b5305660-b4d6-4200-8e28-631070242549",
+        "transaction_id": "bdb5ba09-2241-4f00-b434-73466cd06228"
+      },
+      "message": {
+        "order": {
+          "id": "f3152502-1b32-4dc7-8443-b5e19898011c",
+          "type": "DEFAULT"
+        }
+      }
+    }
+  ]
+}

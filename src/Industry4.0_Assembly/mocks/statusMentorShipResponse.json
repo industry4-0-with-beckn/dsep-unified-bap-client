@@ -1,0 +1,143 @@
+{
+  "context": {
+    "domain": "dsep:mentoring",
+    "version": "1.0.0",
+    "action": "status",
+    "bap_id": "dsep-protocol.becknprotocol.io",
+    "bap_uri": "https://dsep-protocol-network.becknprotocol.io/",
+    "bpp_id": "dev.elevate-apis.shikshalokam.org/bpp",
+    "bpp_uri": "https://dev.elevate-apis.shikshalokam.org/bpp",
+    "transaction_id": "bdb5ba09-2241-4f00-b434-73466cd06228",
+    "message_id": "7fa4ea97-e2f5-40a4-9972-743deea3f3aa",
+    "ttl": "PT10M",
+    "timestamp": "2023-02-16T10:28:53.145Z"
+  },
+  "responses": [
+    {
+      "context": {
+        "domain": "dsep:mentoring",
+        "action": "on_status",
+        "bap_id": "dsep-protocol.becknprotocol.io",
+        "bap_uri": "https://dsep-protocol-network.becknprotocol.io/",
+        "bpp_id": "dev.elevate-apis.shikshalokam.org/bpp",
+        "bpp_uri": "https://dev.elevate-apis.shikshalokam.org/bpp",
+        "timestamp": "2023-02-16T10:28:53.328Z",
+        "ttl": "PT10M",
+        "version": "1.0.0",
+        "message_id": "7fa4ea97-e2f5-40a4-9972-743deea3f3aa",
+        "transaction_id": "bdb5ba09-2241-4f00-b434-73466cd06228"
+      },
+      "message": {
+        "order": {
+          "id": "e846847a-09fa-4e63-83d2-3696cff10061",
+          "state": "ACTIVE",
+          "type": "DEFAULT",
+          "provider": {
+            "categories": [
+              {
+                "id": "Infrastructure Management",
+                "descriptor": {
+                  "code": "Infrastructure Management",
+                  "name": "Infrastructure Management"
+                }
+              }
+            ],
+            "id": "63d93aea62820fd9e6be9d1b",
+            "descriptor": {
+              "code": "org7",
+              "name": "ShikshalokamSeven",
+              "short_desc": "ShikshalokamOrgSeven"
+            },
+            "items": [
+              {
+                "quantity": {
+                  "available": {
+                    "count": 5
+                  },
+                  "allocated": {
+                    "count": 10
+                  }
+                },
+                "price": {
+                  "value": "0"
+                },
+                "id": "63e629b823df08285693637f",
+                "category_ids": ["Infrastructure-Management"],
+                "descriptor": {
+                  "images": [
+                    {
+                      "url": "https://loremflickr.com/640/480/abstract?random=fgroh9kp85"
+                    }
+                  ],
+                  "code": "Class Room Management Level 2",
+                  "name": "Class Room Management Level 2",
+                  "short_desc": "A level 1 session on class room management for state schools and colleges.",
+                  "long_desc": "A level 1 session on class room management for state schools and colleges."
+                },
+                "fulfillment_ids": ["26f654d0-602a-4adb-b0a3-8dda6583d6dd"],
+                "tags": [
+                  {
+                    "code": "recommended_for",
+                    "display": true,
+                    "name": "recommended_for",
+                    "list": [
+                      {
+                        "code": "deo",
+                        "name": "District education officer"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "fulfillments": [
+              {
+                "language": ["English"],
+                "id": "26f654d0-602a-4adb-b0a3-8dda6583d6dd",
+                "time": {
+                  "range": {
+                    "start": "2023-02-19T23:23:16",
+                    "end": "2023-02-20T01:23:16"
+                  },
+                  "label": "Session Timing"
+                },
+                "type": "ONLINE",
+                "tags": [
+                  {
+                    "code": "status",
+                    "name": "status",
+                    "list": [
+                      {
+                        "code": "live",
+                        "name": "Live"
+                      }
+                    ],
+                    "display": true
+                  },
+                  {
+                    "code": "timeZone",
+                    "name": "timeZone",
+                    "list": [
+                      {
+                        "code": "Asia/Calcutta",
+                        "name": "Asia/Calcutta"
+                      }
+                    ],
+                    "display": true
+                  }
+                ],
+                "agent": {
+                  "person": {
+                    "name": "joffin Mentor Twelve",
+                    "id": "63e5fa8762820fd9e6be9e21"
+                  }
+                },
+                "tracking": false
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
