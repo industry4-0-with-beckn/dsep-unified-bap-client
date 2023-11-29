@@ -1,0 +1,110 @@
+{
+    "context": {
+        "domain": "{{domain_assembly}}",
+        "location": {
+            "country": {
+                "code": "DE"
+            }
+        },
+        "transaction_id": "a9aaecca-10b7-4d19-b640-b047a7c62196",
+        "message_id": "bb579fb8-cb82-4824-be12-fcbc405b6608",
+        "action": "search",
+        "timestamp": "2023-05-25T05:23:03.443Z",
+        "version": "1.1.0",
+        "bap_uri": "{{bap_uri}}",
+        "bap_id": "{{bap_id}}",
+        // "bpp_id": "sampat-bpp",
+        // "bpp_id":"{{bpp_id}}",
+        // "bpp_uri":"{{bpp_uri}}",
+        // "bpp_uri":"https://sampatbppnetwork.loca.lt",
+        "ttl": "PT10M"
+    },
+    "message": {
+        "intent": {
+            "provider": {
+                "locations": [
+                    {
+                        "circle": {
+                            "gps": "50.313409, 11.912811",
+                            "radius": {
+                                "type": "CONSTANT",
+                                "value": "4",
+                                "unit": "miles"
+                            }
+                        }
+                    }
+                ],
+                "rating": "gte>3"
+            },
+            "category": {
+                "descriptor": {
+                    "code": "assembly"
+                },
+                "tags": [
+                    {
+                        "descriptor": {
+                            "code": "product-info",
+                            "name": "Product Information"
+                        },
+                        "list": [
+                            {
+                                "descriptor": {
+                                    "name": "product-type"
+                                },
+                                "value": "electronics"
+                            }
+                        ]
+                    },
+                    {
+                        "descriptor": {
+                            "code": "assembly-info",
+                            "name": "Assembly Information"
+                        },
+                        "list": [
+                            {
+                                "descriptor": {
+                                    "name": "assembly-method"
+                                },
+                                "value": "automated"
+                            }
+                        ]
+                    },
+                    {
+                        "descriptor": {
+                            "code": "scale-info",
+                            "name": "Scale Information"
+                        },
+                        "list": [
+                            {
+                                "descriptor": {
+                                    "name": "scale-type"
+                                },
+                                "value": "industrial"
+                            }
+                        ]
+                    },
+                    {
+                        "descriptor": {
+                            "code": "printer-info",
+                            "name": "Printer Information"
+                        },
+                        "list": [
+                            {
+                                "descriptor": {
+                                    "name": "Resolution"
+                                },
+                                "value": "gte>20%"
+                            },
+                            {
+                                "descriptor": {
+                                    "name": "success-rate"
+                                },
+                                "value": "gte>95%"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}
