@@ -419,12 +419,26 @@ export const buildStatusResponse = (response: any = {}, input: any = {}) => {
 export const buildSelectRequest = (input: any = {}) => {
   const context = buildContext({
     ...input?.context,
-    category: "courses",
-    action: "select"
+    action: "select",
+    domain: `${process.env.DOMAIN}assembly`,
   });
   const message = {
-    order: { items: [{ id: input?.courseId }] }
-  };
+  //   order: { items: [{ id: input?.courseId }] }
+  // };
+  // if(input?.providerId)
+  order:{
+    provider:{
+      id: input?.providerId
+    },
+    items: [{ id: input?.itemId }],
+    fulfillments:[{id:input?.fulfillmentId}],
+    tags:[{
+      descriptor:{
+        name: input?.tagName
+      }
+    }]
+  }
+}
   return { payload: { context, message } };
 };
 
@@ -439,49 +453,41 @@ export const buildSelectResponse = (response: any = {}, body: any = {}) => {
   const provider = input?.message?.order?.provider;
   const item = input?.message?.order?.items?.[0];
 
-  const category: any = provider?.categories?.find((category: any) => category?.id === item?.category_id);
+  // const category: any = provider?.categories?.find((category: any) => category?.id === item?.category_id);
 
-  const course = {
-    id: item?.id,
-    name: item?.descriptor?.name,
-    description: item?.descriptor?.long_desc,
-    imageLocations: item?.descriptor?.images?.map((image: any) => image?.url),
-    duration: item?.time?.duration,
+  const selectProvider = {
     provider: {
       id: provider?.id,
       name: provider?.descriptor?.name,
-      description: provider?.descriptor?.long_desc
+      description: provider?.descriptor?.long_desc,
+      image: provider?.descriptor?.images?.map((image: any) => image?.url),
     },
-    category: {
-      id: category?.id,
-      name: category?.name
-    }
   };
 
-  let courseDetails = item?.tags?.find((tag: any) => tag?.descriptor?.name == "courseDetails");
+  // let courseDetails = item?.tags?.find((tag: any) => tag?.descriptor?.name == "courseDetails");
 
-  const eligibility = item?.tags?.find((tag: any) => tag?.descriptor?.name == "eligibility");
-  const courseHighlights = item?.tags?.find((tag: any) => tag?.descriptor?.name == "courseHighlights");
-  const prerequisites = item?.tags?.find((tag: any) => tag?.descriptor?.name == "prerequisites");
+  // const eligibility = item?.tags?.find((tag: any) => tag?.descriptor?.name == "eligibility");
+  // const courseHighlights = item?.tags?.find((tag: any) => tag?.descriptor?.name == "courseHighlights");
+  // const prerequisites = item?.tags?.find((tag: any) => tag?.descriptor?.name == "prerequisites");
 
-  const additionalFormUrl = item?.xinput?.form?.url
+  const formUrl = item?.xinput?.form?.url
 
-  courseDetails = {
-    price: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "price")?.value,
-    startDate: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "startDate")?.value,
-    endDate: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "endDate")?.value,
-    rating: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "rating")?.value,
-    credits: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "credits")?.value,
+  // courseDetails = {
+  //   price: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "price")?.value,
+  //   startDate: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "startDate")?.value,
+  //   endDate: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "endDate")?.value,
+  //   rating: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "rating")?.value,
+  //   credits: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "credits")?.value,
 
-    instructors: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "instructors")?.value,
-    offeringInstitue: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "offeringInstitue")?.value,
-    courseUrl: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "url")?.value,
-    enrollmentEndDate: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "enrollmentEndDate")?.value,
+  //   instructors: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "instructors")?.value,
+  //   offeringInstitue: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "offeringInstitue")?.value,
+  //   courseUrl: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "url")?.value,
+  //   enrollmentEndDate: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "enrollmentEndDate")?.value,
 
-    eligibility: eligibility?.list?.map((li: any) => ({ name: li?.descriptor?.name, value: li?.value })),
-    courseHighlights: courseHighlights?.list?.map((li: any) => ({ name: li?.descriptor?.name, value: li?.value })),
-    prerequisites: prerequisites?.list?.map((li: any) => ({ name: li?.descriptor?.name, value: li?.value }))
-  }
+  //   eligibility: eligibility?.list?.map((li: any) => ({ name: li?.descriptor?.name, value: li?.value })),
+  //   courseHighlights: courseHighlights?.list?.map((li: any) => ({ name: li?.descriptor?.name, value: li?.value })),
+  //   prerequisites: prerequisites?.list?.map((li: any) => ({ name: li?.descriptor?.name, value: li?.value }))
+  // }
 
-  return { data: { context, course, courseDetails, additionalFormUrl } };
+  return { data: { context, selectProvider, formUrl } };
 };
