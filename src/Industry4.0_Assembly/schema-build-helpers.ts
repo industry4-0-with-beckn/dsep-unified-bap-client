@@ -420,25 +420,49 @@ export const buildSelectRequest = (input: any = {}) => {
   const context = buildContext({
     ...input?.context,
     action: "select",
-    domain: `${process.env.DOMAIN}assembly`,
+    domain: input?.domain,
   });
   const message = {
+   
+  }
   //   order: { items: [{ id: input?.courseId }] }
   // };
   // if(input?.providerId)
-  order:{
-    provider:{
-      id: input?.providerId
-    },
-    items: [{ id: input?.itemId }],
-    fulfillments:[{id:input?.fulfillmentId}],
-    tags:[{
-      descriptor:{
-        name: input?.tagName
-      }
-    }]
+  let order: any = {};
+  if(input?.providerId){
+    order = {
+      provider:{
+        id: input?.providerId
+      },
+      items: [{ id: input?.itemId }],
+      fulfillments:[{id:input?.fulfillmentId}],
+      tags:[{
+        descriptor:{
+          name: input?.tagName
+        },
+      }]
+    };
   }
-}
+
+  if(Object.keys(order).length){
+    message= {
+      ...message,
+      order
+    };
+  }
+  // order:{
+  //   provider:{
+  //     id: input?.providerId
+  //   },
+  //   items: [{ id: input?.itemId }],
+  //   fulfillments:[{id:input?.fulfillmentId}],
+  //   tags:[{
+  //     descriptor:{
+  //       name: input?.tagName
+  //     }
+  //   }]
+  // }
+
   return { payload: { context, message } };
 };
 
@@ -459,7 +483,7 @@ export const buildSelectResponse = (response: any = {}, body: any = {}) => {
     provider: {
       id: provider?.id,
       name: provider?.descriptor?.name,
-      description: provider?.descriptor?.long_desc,
+      long_desc: provider?.descriptor?.long_desc,
       image: provider?.descriptor?.images?.map((image: any) => image?.url),
     },
   };
