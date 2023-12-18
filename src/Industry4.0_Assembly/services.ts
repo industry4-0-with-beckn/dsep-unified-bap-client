@@ -85,7 +85,7 @@ export const searchMentorShipService = async (body: any): Promise<any> => {
         body
       );
     }
-
+    console.log("Search res",searchResponse)
     return searchResponse;
   } catch (error: any) {
     return { error: error, errorOccured: true };
@@ -95,7 +95,7 @@ export const searchMentorShipService = async (body: any): Promise<any> => {
 export const selectMentorshipService = async (body: any): Promise<any> => {
   try {
     const selectRequest = buildSelectRequest(body);
-    console.log(JSON.stringify(selectRequest?.payload));
+    console.log("Select Payload=======>",JSON.stringify(selectRequest?.payload));
 
     let selectResponse: any = {};
     if (mentorshipNetwork !== "local") {
@@ -105,15 +105,21 @@ export const selectMentorshipService = async (body: any): Promise<any> => {
         selectRequest.payload,
         { headers }
       );
+      console.log("dank res",res?.data)
       selectResponse = buildSelectResponse(res, body);
-    } else {
+      console.log("Select response=======>",JSON.stringify(body));
+    } 
+    else {
       selectResponse = buildSelectResponse(
         { data: selectMentorshipResp },
         body
       );
+ 
     }
+    console.log("Select body",JSON.stringify(body))
     return selectResponse;
   } catch (error: any) {
+    console.log("error",error)
     return { error: error, errorOccured: true };
   }
 };

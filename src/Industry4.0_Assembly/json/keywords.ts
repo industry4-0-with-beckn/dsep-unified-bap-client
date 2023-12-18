@@ -1,5 +1,5 @@
 assembly_keywords = {
-    'assembly': 'assembly'
+    'assembly': 'assembly',
     'ets': 'assembly',
     'ets assembly': 'assembly',
     'steel': 'ETS-Assembly',

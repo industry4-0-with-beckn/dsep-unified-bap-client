@@ -2,6 +2,7 @@ import moment from "moment";
 import { v4 as uuid } from "uuid";
 import { Ind4assemblyContext } from "./schema";
 export const buildContext = (input: any = {}) => {
+  // console.log("===>===>===>",input)
   const context: Ind4assemblyContext = {
     domain: `${process.env.DOMAIN}assembly`,
     
@@ -15,7 +16,8 @@ export const buildContext = (input: any = {}) => {
     bap_id: process.env.BAP_ID || "",
     bap_uri: process.env.BAP_URI || "",
     timestamp: input.timestamp ?? moment().toISOString(),
-
+    bpp_id:input?.bppId,
+    bpp_uri:input?.bppUri,
     message_id: input?.messageId ?? uuid(),
     version: process.env.CORE_VERSION || (input?.core_version ?? ""),
     ttl: "PT10M", // ask Ajay for its significance
@@ -113,6 +115,7 @@ export const buildSearchResponse = (
 
     
   const inputs = response?.data?.responses;
+  console.log("print res", inputs)
   const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = inputs?.[0]?.context ?? {};
   const context = { transactionId, messageId, bppId, bppUri };
 
@@ -127,8 +130,10 @@ export const buildSearchResponse = (
   const tags: any[] = [];
   const location: any[] = [];
   inputs.forEach((input: any) => {
-    const { bpp_id: bppId, bpp_uri: bppUri }: any = input?.context ?? {};
+    // const { bpp_id: bppId, bpp_uri: bppUri }: any = input?.context ?? {};
     // const context = { bppId, bppUri };
+    const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = input.context ?? {};
+    const context = { transactionId, messageId, bppId, bppUri };
 
     const providers = input?.message?.catalog?.providers;
 
@@ -173,6 +178,7 @@ export const buildSearchResponse = (
       });
 
         serviceProviders.push({
+          context,
           id: provider?.id,
           name: provider?.descriptor?.name,
           short_desc: provider?.descriptor?.short_desc,
@@ -186,7 +192,7 @@ export const buildSearchResponse = (
           rating: provider?.rating,
         });
     });
-  })
+    })
   return { data: { context, serviceProviders } };
 };
 
@@ -216,96 +222,181 @@ export const buildSavedAppliedCategoryResponse = (savedResponse: any = {}, appli
 export const buildInitRequest = (input: any = {}) => {
   const context = buildContext({
     ...input?.context,
-    category: "courses",
-    action: "init"
+    domain: input?.context?.domain,
+    bpp_id: input?.context?.bppId,
+    bpp_uri: input?.context?.bppUri,
+    action: "init",
+    // console.log("")
   });
 
-  const message: any = { order: { items: [{ id: input?.courseId }] } };
-  if (input?.applicantProfile?.name) {
-    message.order.fulfillments = [{ customer: { person: { name: input?.applicantProfile?.name } } }];
-  }
-
-  if (input?.additionalFormData) {
-    message.order.xinput = {
-      submission_id: input?.additionalFormData?.submissionId,
-      data: Object.fromEntries(input?.additionalFormData?.data?.map((formData: any) => [formData?.formInputKey, formData?.formInputValue]) ?? [])
-    }
-  }
+  const message: any = { 
+    order :{
+      provider:{
+        id: input?.providerId,
+      },
+      items: [
+        { id: input?.itemId,
+        }],
+      fulfillments:[
+        {
+          id:input?.fulfillmentId,
+          customer:{
+            contact:{
+              email: input?.email,
+              phone: input?.mobileNumber,
+            },
+            person: {
+              name: input?.name
+            }
+          },
+          stops:[
+            {
+              type: input?.type,
+              location:{
+                gps:input?.location,
+                address: input?.shippingAddress,
+              },
+              contact: {
+                phone: input?.mobileNumber
+              }
+            },
+          ]
+      }],
+      billing: {
+        name: input?.name,
+        address: input?.billingAddress,
+        email: input?.email,
+        phone: input?.mobileNumber,
+      }
+    },
+    
+  };
+  
 
   return { payload: { context, message } };
 };
 
-export const buildInitResponse = (response: any = {}, body: any = {}) => {
-  const input = response?.data?.responses?.[0];
-  if (!input)
-    return { status: 200 };
+// export const buildInitResponse = (response: any = {}, body: any = {}) => {
+//   const input = response?.data?.responses?.[0];
+//   console.log("dank input",input)
+//   if (!input)
+//     return { status: 200 };
+//     const context = {
+//       transactionId: input?.context?.transaction_id,
+//       messageId: input?.context?.message_id,
+//       bppId: input?.context?.bpp_id,
+//       bppUri: input?.context?.bpp_uri,
+//     };
+  
+  
+//   const provider = input?.message?.order?.provider;
+//   const item = input?.message?.order?.items?.[0];
+//   const fulfillment = input?.message?.order?.fulfillments?.[0];
+//   const payments = input?.message?.order?.payments?.[0];
+//   const breakup = input?.message?.order?.quote?.breakup?.[0]
+//   const initProv = {
+//     provider: {
+//       id: provider?.id,
+//       descriptor:{
+//       name: provider?.descriptor?.name,
+//       short_desc: provider?.descriptor?.short_desc,
+//       long_desc: provider?.descriptor?.long_desc,
+//       image: provider?.descriptor?.images?.map((image: any) => image?.url),
+//       },
+//     },
+//       items:[
+//         {
+//           id: item?.id,
+//           descriptor:{
+//             name: item?.descriptor?.name,
+//           },
+//           category_ids: [
+//             item?.category_ids,
+//           ],
+//           price: {
+//             currency: item?.price?.currency,
+//             value: item?.price?.value,
+//         }
+//           // xinput:{
+//           //   required: item?.xinput?.required,
+//           //   form:{
+//           //     url: item?.xinput?.form?.url,
+//           //     resubmit: item?.xinput?.resubmit,
+//           //   },
+//           // },
+//         },
+//       ], 
+//       fulfillments: [{
+//         id: fulfillment?.id,
+//             customer:{
+//               contact:{
+//                 email: fulfillment?.customer?.contact?.email,
+//                 phone: fulfillment?.customer?.contact?.mobileNumber,
+//               },
+//               person: {
+//                 name: fulfillment?.customer?.person?.name,
+//               }
+//             },
+//             stops:[
+//               {
+//                 type: fulfillment?.stops?.type,
+//                 location:{
+//                   gps:fulfillment?.stops?.location?.gps,
+//                   address: fulfillment?.stops?.location?.shippingAddress,
+//                 },
+//                 contact: {
+//                   phone: fulfillment?.stops?.contact?.phone
+//                 }
+//               },
+//             ],
+//             tracking: fulfillment?.tracking,
+        
+//       }],
+//       payments: [
+//         {
+//             collected_by: payments?.collected_by,
+//             params: {
+//                 amount: payments?.params?.amount,
+//                 currency: payments?.params?.currency,
+//                 bank_account_number: payments?.params?.bank_account_number,
+//                 bank_code: payments?.params?.params?.bank_code,
+//                 bank_account_name: payments?.params?.bank_account_name
+//             },
+//             status: payments?.status,
+//             type: payments?.type
+//         }
+//     ],
+//     quote: {
+//         breakup: [
+//             {
+//                 price: {
+//                     currency: breakup?.price?.currency,
+//                     value: breakup?.price?.value
+//                 },
+//                 title: breakup?.title
+//             },
+//             {}
+//                 price: {
+//                     currency: breakup?.price?.currency,
+//                     value: breakup?.price?.value,
+//                 },
+//                 title: breakup?.price?.title
+            
+//         ],
+//         price: {
+//             currency: breakup?.price?.currency,
+//             value: breakup?.price.value
+//         }
+//     },
+//   };
 
-  const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = input?.context ?? {};
-  const context = { transactionId, messageId, bppId, bppUri };
+  
 
-  const provider = input?.message?.order?.provider;
-  const item = input?.message?.order?.items?.[0];
+  
+//   return { data: { context, initProv } };
 
-  const category: any = provider?.categories?.find((category: any) => category?.id === item?.category_id);
 
-  const course = {
-    id: item?.id,
-    name: item?.descriptor?.name,
-    description: item?.descriptor?.long_desc,
-    imageLocations: item?.descriptor?.images?.map((image: any) => image?.url),
-    duration: item?.time?.duration,
-    provider: {
-      id: provider?.id,
-      name: provider?.descriptor?.name,
-      description: provider?.descriptor?.long_desc
-    },
-    category: {
-      id: category?.id,
-      name: category?.name
-    }
-  };
-
-  let courseDetails = item?.tags?.find((tag: any) => tag?.descriptor?.name == "courseDetails");
-
-  const eligibility = item?.tags?.find((tag: any) => tag?.descriptor?.name == "eligibility");
-  const courseHighlights = item?.tags?.find((tag: any) => tag?.descriptor?.name == "courseHighlights");
-  const prerequisites = item?.tags?.find((tag: any) => tag?.descriptor?.name == "prerequisites");
-
-  const additionalFormUrl = item?.xinput?.form?.url
-
-  courseDetails = {
-    price: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "price")?.value,
-    startDate: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "startDate")?.value,
-    endDate: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "endDate")?.value,
-    rating: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "rating")?.value,
-    credits: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "credits")?.value,
-
-    instructors: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "instructors")?.value,
-    offeringInstitue: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "offeringInstitue")?.value,
-    courseUrl: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "url")?.value,
-    enrollmentEndDate: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "enrollmentEndDate")?.value,
-
-    eligibility: eligibility?.list?.map((li: any) => ({ name: li?.descriptor?.name, value: li?.value })),
-    courseHighlights: courseHighlights?.list?.map((li: any) => ({ name: li?.descriptor?.name, value: li?.value })),
-    prerequisites: prerequisites?.list?.map((li: any) => ({ name: li?.descriptor?.name, value: li?.value }))
-  }
-
-  const fulfillment = input?.message?.order?.fulfillments?.[0];
-  const applicantProfile = {
-    name: fulfillment?.customer?.person?.name,
-    email: fulfillment?.contact?.email,
-    contact: fulfillment?.contact?.phone,
-  };
-
-  const additionalFormData = {
-    formUrl: item?.xinput?.form?.url,
-    formMimeType: item?.xinput?.form?.mime_type,
-    submissionId: item?.xinput?.form?.submission_id,
-    data: Object.keys(item?.xinput?.form?.data ?? {}).map((key: string) => { return { formInputKey: key, formInputValue: item?.xinput?.form?.data[key] }; })
-  };
-
-  return { data: { context, course, courseDetails, applicantProfile, additionalFormUrl, additionalFormData } };
-};
+// };
 
 export const buildConfirmRequest = (input: any = {}) => {
   const context = buildContext({
@@ -417,101 +508,94 @@ export const buildStatusResponse = (response: any = {}, input: any = {}) => {
 };
 
 export const buildSelectRequest = (input: any = {}) => {
+  // console.log("input Context======>",input?.context)
   const context = buildContext({
     ...input?.context,
     action: "select",
-    domain: input?.domain,
+    domain: input?.context?.domain,
+    bpp_id: input?.context?.bppId,
+    bpp_uri: input?.context?.bppUri,
   });
-  const message = {
-   
-  }
-  //   order: { items: [{ id: input?.courseId }] }
-  // };
-  // if(input?.providerId)
-  let order: any = {};
-  if(input?.providerId){
-    order = {
+  // console.log("Output Context======>",context)
+  const message:any = {
+    order :{
       provider:{
-        id: input?.providerId
+        id: input?.providerId,
       },
-      items: [{ id: input?.itemId }],
+      items: [
+        { id: input?.itemId,
+        }],
       fulfillments:[{id:input?.fulfillmentId}],
       tags:[{
         descriptor:{
-          name: input?.tagName
+          name: input?.tagName,
         },
-      }]
-    };
+      }],
+    },
   }
-
-  if(Object.keys(order).length){
-    message= {
-      ...message,
-      order
-    };
-  }
-  // order:{
-  //   provider:{
-  //     id: input?.providerId
-  //   },
-  //   items: [{ id: input?.itemId }],
-  //   fulfillments:[{id:input?.fulfillmentId}],
-  //   tags:[{
-  //     descriptor:{
-  //       name: input?.tagName
-  //     }
-  //   }]
-  // }
 
   return { payload: { context, message } };
 };
-
 export const buildSelectResponse = (response: any = {}, body: any = {}) => {
   const input = response?.data?.responses?.[0];
+  console.log("dank input",input)
   if (!input)
     return { status: 200 };
-
-  const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = input?.context ?? {};
-  const context = { transactionId, messageId, bppId, bppUri };
-
+    const context = {
+      transactionId: input?.context?.transaction_id,
+      messageId: input?.context?.message_id,
+      bppId: input?.context?.bpp_id,
+      bppUri: input?.context?.bpp_uri,
+    };
+  
+  
   const provider = input?.message?.order?.provider;
   const item = input?.message?.order?.items?.[0];
-
-  // const category: any = provider?.categories?.find((category: any) => category?.id === item?.category_id);
+  const fulfillment = input?.message?.order?.fulfillments?.[0];
 
   const selectProvider = {
     provider: {
       id: provider?.id,
+      descriptor:{
       name: provider?.descriptor?.name,
+      short_desc: provider?.descriptor?.short_desc,
       long_desc: provider?.descriptor?.long_desc,
       image: provider?.descriptor?.images?.map((image: any) => image?.url),
+      },
+    },
+      items:[
+        {
+          id: item?.id,
+          descriptor:{
+            name: item?.descriptor?.name,
+          },
+          category_ids: [
+            item?.category_ids,
+          ],
+          xinput:{
+            required: item?.xinput?.required,
+            form:{
+              url: item?.xinput?.form?.url,
+              resubmit: item?.xinput?.resubmit,
+            },
+          },
+        },
+      ], 
+      fulfillments: [{
+        id: fulfillment?.id,
+        tracking: fulfillment?.tracking
+      }],
+      quote:{
+        price:{
+          currency: input?.message?.order?.quote?.price?.currency,
+          value: input?.message?.order?.quote?.price?.value,
+        }
     },
   };
 
-  // let courseDetails = item?.tags?.find((tag: any) => tag?.descriptor?.name == "courseDetails");
-
-  // const eligibility = item?.tags?.find((tag: any) => tag?.descriptor?.name == "eligibility");
-  // const courseHighlights = item?.tags?.find((tag: any) => tag?.descriptor?.name == "courseHighlights");
-  // const prerequisites = item?.tags?.find((tag: any) => tag?.descriptor?.name == "prerequisites");
-
+  
   const formUrl = item?.xinput?.form?.url
 
-  // courseDetails = {
-  //   price: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "price")?.value,
-  //   startDate: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "startDate")?.value,
-  //   endDate: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "endDate")?.value,
-  //   rating: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "rating")?.value,
-  //   credits: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "credits")?.value,
-
-  //   instructors: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "instructors")?.value,
-  //   offeringInstitue: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "offeringInstitue")?.value,
-  //   courseUrl: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "url")?.value,
-  //   enrollmentEndDate: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "enrollmentEndDate")?.value,
-
-  //   eligibility: eligibility?.list?.map((li: any) => ({ name: li?.descriptor?.name, value: li?.value })),
-  //   courseHighlights: courseHighlights?.list?.map((li: any) => ({ name: li?.descriptor?.name, value: li?.value })),
-  //   prerequisites: prerequisites?.list?.map((li: any) => ({ name: li?.descriptor?.name, value: li?.value }))
-  // }
-
-  return { data: { context, selectProvider, formUrl } };
+  
+  return { data: { context, selectProvider,formUrl } };
 };
