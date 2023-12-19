@@ -85,7 +85,7 @@ export const searchMentorShipService = async (body: any): Promise<any> => {
         body
       );
     }
-    console.log("Search res",searchResponse)
+    // console.log("Search res",searchResponse)
     return searchResponse;
   } catch (error: any) {
     return { error: error, errorOccured: true };
@@ -95,7 +95,7 @@ export const searchMentorShipService = async (body: any): Promise<any> => {
 export const selectMentorshipService = async (body: any): Promise<any> => {
   try {
     const selectRequest = buildSelectRequest(body);
-    console.log("Select Payload=======>",JSON.stringify(selectRequest?.payload));
+    // console.log("Select Payload=======>",JSON.stringify(selectRequest?.payload));
 
     let selectResponse: any = {};
     if (mentorshipNetwork !== "local") {
@@ -105,9 +105,9 @@ export const selectMentorshipService = async (body: any): Promise<any> => {
         selectRequest.payload,
         { headers }
       );
-      console.log("dank res",res?.data)
+      // console.log("dank res",res?.data)
       selectResponse = buildSelectResponse(res, body);
-      console.log("Select response=======>",JSON.stringify(body));
+      // console.log("Select response=======>",JSON.stringify(body));
     } 
     else {
       selectResponse = buildSelectResponse(
@@ -154,7 +154,7 @@ export const confirmMentorshipService = async (body: any): Promise<any> => {
 export const initMentorshipService = async (body: any): Promise<any> => {
   try {
     const initRequest = buildInitRequest(body);
-    console.log(JSON.stringify(initRequest?.payload));
+    console.log("dank init request",JSON.stringify(initRequest?.payload));
     let initResponse: any = {};
     if (mentorshipNetwork !== "local") {
       const headers = { "Content-Type": "application/JSON" };
@@ -162,11 +162,14 @@ export const initMentorshipService = async (body: any): Promise<any> => {
         headers
       });
       initResponse = buildInitResponse(res, body);
+            console.log("init response=======>",JSON.stringify(initResponse));
+
     } else {
       initResponse = buildInitResponse({ data: initMentorShipResponse }, body);
     }
     return initResponse;
   } catch (error) {
+    console.log("dank error msg",error)
     return { error: error, errorOccured: true };
   }
 };
