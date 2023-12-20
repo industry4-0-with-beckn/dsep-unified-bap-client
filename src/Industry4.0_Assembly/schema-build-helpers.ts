@@ -356,13 +356,13 @@ export const buildInitResponse = (response: any = {}, body: any = {}) => {
             },
             stops:[
               {
-                type: fulfillment?.stops?.type,
+                type: fulfillment?.stops[0]?.type,
                 location:{
-                  gps:fulfillment?.stops?.location?.gps,
-                  address: fulfillment?.stops?.location?.shippingAddress,
+                  gps:fulfillment?.stops[0]?.location?.gps,
+                  address: fulfillment?.stops[0]?.location?.address,
                 },
                 contact: {
-                  phone: fulfillment?.stops?.contact?.phone
+                  phone: fulfillment?.stops[0]?.contact?.phone
                 }
               },
             ],
@@ -370,16 +370,16 @@ export const buildInitResponse = (response: any = {}, body: any = {}) => {
         
       }],
       billing:{
-        name: provider?.billing?.name,
-        address:provider?.billing?.address,
+        name: input?.message?.order?.billing?.name,
+        address:input?.message?.order?.billing?.address,
         state:{
-          name: provider?.billing?.state?.name,
+          name: input?.message?.order?.billing?.state?.name,
         },
         city:{
-          name:provider?.billing?.city?.name,
+          name:input?.message?.order?.billing?.city?.name,
         },
-        email: provider?.billing?.email
-        phone: provider?.billing?.phone
+        email: input?.message?.order?.billing?.email,
+        phone: input?.message?.order?.billing?.phone
       },
       payments: [
         {
@@ -400,7 +400,7 @@ export const buildInitResponse = (response: any = {}, body: any = {}) => {
             {
                 price: {
                     currency: breakup?.price?.currency,
-                    value: breakup?.price?.value
+                    value: breakup?.price?.value,
                 },
                 title: breakup?.title
             },
@@ -414,8 +414,8 @@ export const buildInitResponse = (response: any = {}, body: any = {}) => {
             
         ],
         price: {
-            currency: provider?.price?.currency,
-            value: provider?.price?.value
+            currency: input?.message?.order?.quote?.price?.currency,
+            value: input?.message?.order?.quote?.price?.value
         }
     },
     type: "DEFAULT"
@@ -436,11 +436,79 @@ export const buildConfirmRequest = (input: any = {}) => {
     action: "init",
   });
 
-  const message: any = { order: { items: [{ id: input?.courseId }] } };
-  if (input?.applicantProfile?.name) {
-    message.order.fulfillments = [{ customer: { person: { name: input?.applicantProfile?.name } } }];
-  }
-
+  const message: any = { 
+    order :{
+      provider:{
+        id: input?.providerId,
+      },
+      items: [
+        { id: input?.itemId,
+        }],
+      fulfillments:[
+        {
+          id:input?.fulfillmentId,
+          customer:{
+            contact:{
+              email: input?.email,
+              phone: input?.mobileNumber,
+            },
+            person: {
+              name: input?.name
+            }
+          },
+          stops:[
+            {
+              type: input?.type,
+              location:{
+                gps:input?.location,
+                address: input?.shippingAddress,
+                city:{
+                  name: process.env.CITY,
+                },
+                country:{
+                  code: process.env.COUNTRY_CODE,
+                },
+                area_code: process.env.CITY_CODE,
+                state:{
+                  name: process.env.CITY,
+                },
+              },
+              contact: {
+                phone: input?.mobileNumber,
+              }
+            },
+          ]
+      }],
+      billing: {
+        name: input?.name,
+        address: input?.billingAddress,
+        city: {
+          name: process.env.CITY,
+      },
+        email: input?.email,
+        phone: input?.mobileNumber,
+        state: {
+          name: process.env.CITY,
+      },
+      },
+      payments : [
+        {
+          collected_by: "bpp",
+          params: {
+              amount: "250",
+              currency: "EUR",
+              bank_account_number: "1234002341",
+              bank_code: "INB0004321",
+              bank_account_name: "Makerspace Assembly Ltd"
+          },
+          status: PAID,
+          type: PRE-ORDER,
+          transaction_id: "a35b56cf-e5cf-41f1-9b5d-fa99d8d5ac8c"
+      }
+      ]
+    },
+    
+  };
   return { payload: { context, message } };
 };
 export const buildConfirmResponse = (response: any = {}, body: any = {}) => {
@@ -603,7 +671,6 @@ export const buildSelectResponse = (response: any = {}, body: any = {}) => {
           category_ids: [
             item?.category_ids,
           ],
-          if(item?.xinput?),
           xinput:{
             required: item?.xinput?.required,
             form:{
