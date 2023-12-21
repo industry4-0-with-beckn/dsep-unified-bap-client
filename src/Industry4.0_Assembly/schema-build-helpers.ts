@@ -299,7 +299,7 @@ export const buildInitRequest = (input: any = {}) => {
 
 export const buildInitResponse = (response: any = {}, body: any = {}) => {
   const input = response?.data?.responses?.[0];
-  console.log("dank initinput",input)
+  
   if (!input)
     return { status: 200 };
     // const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = input?.context ?? {};
@@ -431,9 +431,9 @@ export const buildConfirmRequest = (input: any = {}) => {
   const context = buildContext({
     ...input?.context,
     domain: input?.context?.domain,
-    bpp_id: input?.context?.domain,
+    bpp_id: input?.context?.bppId,
     bpp_uri: input?.context?.bppUri,
-    action: "init",
+    action: "confirm",
   });
 
   const message: any = { 
@@ -449,19 +449,19 @@ export const buildConfirmRequest = (input: any = {}) => {
           id:input?.fulfillmentId,
           customer:{
             contact:{
-              email: input?.email,
-              phone: input?.mobileNumber,
+              email: input?.customerEmail,
+              phone: input?.customerPhone,
             },
             person: {
-              name: input?.name
+              name: input?.customerName
             }
           },
           stops:[
             {
-              type: input?.type,
+              type: input?.stopType,
               location:{
-                gps:input?.location,
-                address: input?.shippingAddress,
+                gps:input?.gps,
+                address: input?.address,
                 city:{
                   name: process.env.CITY,
                 },
@@ -474,36 +474,36 @@ export const buildConfirmRequest = (input: any = {}) => {
                 },
               },
               contact: {
-                phone: input?.mobileNumber,
+                phone: input?.stopPhone,
               }
             },
           ]
       }],
       billing: {
-        name: input?.name,
-        address: input?.billingAddress,
+        name: input?.billName,
+        address: input?.billAddress,
         city: {
           name: process.env.CITY,
       },
-        email: input?.email,
-        phone: input?.mobileNumber,
+        email: input?.billEmail,
+        phone: input?.billPhone,
         state: {
           name: process.env.CITY,
       },
       },
       payments : [
         {
-          collected_by: "bpp",
+          collected_by: input?.collected_by,
           params: {
-              amount: "250",
-              currency: "EUR",
-              bank_account_number: "1234002341",
-              bank_code: "INB0004321",
-              bank_account_name: "Makerspace Assembly Ltd"
+              amount: input?.amount,
+              currency: input?.currency,
+              bank_account_number: input?.bank_account_number,
+              bank_code: input?.bank_code,
+              bank_account_name: input?.bank_account_name,
           },
-          status: PAID,
-          type: PRE-ORDER,
-          transaction_id: "a35b56cf-e5cf-41f1-9b5d-fa99d8d5ac8c"
+          status: input?.status,
+          type: input?.type,
+          transaction_id: input?.context?.input?.transactionId,
       }
       ]
     },
@@ -515,75 +515,148 @@ export const buildConfirmResponse = (response: any = {}, body: any = {}) => {
   const input = response?.data?.responses?.[0];
   if (!input)
     return { status: 200 };
-
-  const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = input?.context ?? {};
-  const context = { transactionId, messageId, bppId, bppUri };
-
+    const context = {
+      transactionId: input?.context?.transaction_id,
+      messageId: input?.context?.message_id,
+      bppId: input?.context?.bpp_id,
+      bppUri: input?.context?.bpp_uri,
+    };
+  
+  
   const provider = input?.message?.order?.provider;
   const item = input?.message?.order?.items?.[0];
-
-  const category: any = provider?.categories?.find((category: any) => category?.id === item?.category_id);
-
-  const course = {
-    id: item?.id,
-    name: item?.descriptor?.name,
-    description: item?.descriptor?.long_desc,
-    imageLocations: item?.descriptor?.images?.map((image: any) => image?.url),
-    duration: item?.time?.duration,
-    provider: {
-      id: provider?.id,
-      name: provider?.descriptor?.name,
-      description: provider?.descriptor?.long_desc
-    },
-    category: {
-      id: category?.id,
-      name: category?.name
-    }
-  };
-
-  const applicationId = input?.message?.order?.id;
-  const applicationState = input?.message?.order?.state;
-
-  let courseDetails = item?.tags?.find((tag: any) => tag?.descriptor?.name == "courseDetails");
-
-  const eligibility = item?.tags?.find((tag: any) => tag?.descriptor?.name == "eligibility");
-  const courseHighlights = item?.tags?.find((tag: any) => tag?.descriptor?.name == "courseHighlights");
-  const prerequisites = item?.tags?.find((tag: any) => tag?.descriptor?.name == "prerequisites");
-
-  const additionalFormUrl = item?.xinput?.form?.url
-
-  courseDetails = {
-    price: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "price")?.value,
-    startDate: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "startDate")?.value,
-    endDate: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "endDate")?.value,
-    rating: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "rating")?.value,
-    credits: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "credits")?.value,
-
-    instructors: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "instructors")?.value,
-    offeringInstitue: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "offeringInstitue")?.value,
-    courseUrl: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "url")?.value,
-    enrollmentEndDate: courseDetails?.list?.find((detail: any) => detail?.descriptor?.name == "enrollmentEndDate")?.value,
-
-    eligibility: eligibility?.list?.map((li: any) => ({ name: li?.descriptor?.name, value: li?.value })),
-    courseHighlights: courseHighlights?.list?.map((li: any) => ({ name: li?.descriptor?.name, value: li?.value })),
-    prerequisites: prerequisites?.list?.map((li: any) => ({ name: li?.descriptor?.name, value: li?.value }))
-  }
-
   const fulfillment = input?.message?.order?.fulfillments?.[0];
-  const applicantProfile = {
-    name: fulfillment?.customer?.person?.name,
-    email: fulfillment?.contact?.email,
-    contact: fulfillment?.contact?.phone,
+  const payments = input?.message?.order?.payments?.[0];
+  const breakup = input?.message?.order?.quote?.breakup?.[0]
+  const cancellation = input?.message?.order?.quote?.cancellation_terms?.[0]
+  const confirmProv = {
+    order:{
+      id: input?.message?.order?.id,
+      provider: {
+        id: provider?.id,
+        descriptor:{
+        name: provider?.descriptor?.name,
+        short_desc: provider?.descriptor?.short_desc,
+        long_desc: provider?.descriptor?.long_desc,
+        image: provider?.descriptor?.images?.map((image: any) => image?.url),
+        },
+      },
+        items:[
+          {
+            id: item?.id,
+            descriptor:{
+              name: item?.descriptor?.name,
+            },
+            category_ids: [
+              item?.category_ids,
+            ],
+            price: {
+              currency: item?.price?.currency,
+              value: item?.price?.value,
+          }
+          },
+        ], 
+        fulfillments: [{
+          id: fulfillment?.id,
+          state: {
+            descriptor: {
+                code: fulfillment?.state?.descriptor?.code,
+                short_desc:  fulfillment?.state?.descriptor?.short_desc
+            }
+        },
+              customer:{
+                contact:{
+                  email: fulfillment?.customer?.contact?.email,
+                  phone: fulfillment?.customer?.contact?.mobileNumber,
+                },
+                person: {
+                  name: fulfillment?.customer?.person?.name,
+                }
+              },
+              stops:[
+                {
+                  type: fulfillment?.stops[0]?.type,
+                  location:{
+                    gps:fulfillment?.stops[0]?.location?.gps,
+                    address: fulfillment?.stops[0]?.location?.address,
+                  },
+                  contact: {
+                    phone: fulfillment?.stops[0]?.contact?.phone
+                  }
+                },
+              ],
+              tracking: fulfillment?.tracking,
+          
+        }],
+        billing:{
+          name: input?.message?.order?.billing?.name,
+          address:input?.message?.order?.billing?.address,
+          state:{
+            name: input?.message?.order?.billing?.state?.name,
+          },
+          city:{
+            name:input?.message?.order?.billing?.city?.name,
+          },
+          email: input?.message?.order?.billing?.email,
+          phone: input?.message?.order?.billing?.phone
+        },
+        payments: [
+          {
+              collected_by: payments?.collected_by,
+              params: {
+                  amount: payments?.params?.amount,
+                  currency: payments?.params?.currency,
+                  bank_account_number: payments?.params?.bank_account_number,
+                  bank_code: payments?.params?.params?.bank_code,
+                  bank_account_name: payments?.params?.bank_account_name
+              },
+              status: payments?.status,
+              type: payments?.type,
+              transaction_id: payments?.transaction_id
+          }
+      ],
+      quote: {
+          breakup: [
+              {
+                  price: {
+                      currency: breakup?.price?.currency,
+                      value: breakup?.price?.value,
+                  },
+                  title: breakup?.title
+              },
+              {
+                price: {
+                  currency: breakup?.price?.currency,
+                  value: breakup?.price?.value,
+              },
+                title: breakup?.title
+              },
+              
+          ],
+          price: {
+              currency: input?.message?.order?.quote?.price?.currency,
+              value: input?.message?.order?.quote?.price?.value
+          }
+      },
+      cancellation_terms:[
+        {
+          cancellation_fee: {
+            amount: {
+                currency: cancellation?.cancellation_fee?.amount?.currency,
+                value: cancellation?.cancellation_fee?.amount?.value,
+            },
+        } , 
+        }
+      ]
+      
+      type: "DEFAULT"
+    }
+   
   };
 
-  const additionalFormData = {
-    formUrl: item?.xinput?.form?.url,
-    formMimeType: item?.xinput?.form?.mime_type,
-    submissionId: item?.xinput?.form?.submission_id,
-    data: Object.keys(item?.xinput?.form?.data ?? {}).map((key: string) => { return { formInputKey: key, formInputValue: item?.xinput?.form?.data[key] }; })
-  };
 
-  return { data: { original: input, context, applicationId, applicationState, course, courseDetails, applicantProfile, additionalFormUrl, additionalFormData } };
+
+  return { data: { context, confirmProv } };
 };
 
 
