@@ -1,0 +1,123 @@
+{
+    "context": {
+        "transactionId": "17ef992b-2b12-4294-b3ef-07452214c414",
+        "messageId": "a2011b83-6249-42c7-b336-bdcb0337aa64",
+        "bppId": "industry4-bpp",
+        "bppUri": "https://35f2-194-95-60-104.ngrok-free.app"
+    },
+    "confirmProv": {
+        "order": {
+            "id": "b989c9a9-f603-4d44-b38d-26fd72286b38",
+            "provider": {
+                "id": "1",
+                "descriptor": {
+                    "name": "ETS-Assembly",
+                    "short_desc": "Assembly",
+                    "long_desc": "The Steel Container Assembly Machine is a precision-engineered system designed for efficiently assembling. ",
+                    "image": [
+                        "https://images.pexels.com/photos/5532668/pexels-photo-5532668.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                    ]
+                }
+            },
+            "items": [
+                {
+                    "id": "1",
+                    "descriptor": {
+                        "name": "Container With Lid"
+                    },
+                    "category_ids": [
+                        null
+                    ],
+                    "price": {
+                        "currency": "EUR",
+                        "value": "starting from 10 EUR"
+                    }
+                }
+            ],
+            "fulfillments": [
+                {
+                    "id": "f1",
+                    "state": {
+                        "descriptor": {
+                            "code": "ORDER_ACCEPTED",
+                            "short_desc": "Order has been confirmed..."
+                        }
+                    },
+                    "customer": {
+                        "contact": {
+                            "email": "santosh.k@gmail.com"
+                        },
+                        "person": {
+                            "name": "Santosh Kumar"
+                        }
+                    },
+                    "stops": [
+                        {
+                            "location": {},
+                            "contact": {
+                                "phone": "9876543210"
+                            }
+                        }
+                    ],
+                    "tracking": false
+                }
+            ],
+            "billing": {
+                "name": "Santosh Kumar",
+                "address": "151-E, Janpath Road, New Delhi",
+                "state": {
+                    "name": "New Delhi"
+                },
+                "city": {
+                    "name": "New Delhi"
+                },
+                "email": "santosh.k@gmail.com",
+                "phone": "9876543210"
+            },
+            "payments": [
+                {
+                    "collected_by": "BPP",
+                    "params": {
+                        "amount": "1740.0",
+                        "currency": "EUR",
+                        "bank_account_number": "1234002341",
+                        "bank_account_name": "Makerspace Assembly Ltd"
+                    },
+                    "status": "PAID",
+                    "type": "PRE-ORDER",
+                    "transaction_id": "a35b56cf-e5cf-41f1-9b5d-fa99d8d5ac8c"
+                }
+            ],
+            "quote": {
+                "breakup": [
+                    {
+                        "price": {
+                            "currency": "EUR",
+                            "value": "1200"
+                        },
+                        "title": "Base Price"
+                    },
+                    {
+                        "price": {
+                            "currency": "EUR",
+                            "value": "1200"
+                        },
+                        "title": "Base Price"
+                    }
+                ],
+                "price": {
+                    "currency": "EUR",
+                    "value": "1740.0"
+                }
+            },
+            "cancellation_terms": [
+                {
+                    "cancellation_fee": {
+                        "amount": {}
+                    }
+                }
+            ],
+            "type": "DEFAULT"
+        }
+    }
+}

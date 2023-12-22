@@ -187,6 +187,7 @@ export const statusMentorshipService = async (body: any): Promise<any> => {
         { headers }
       );
       statusResponse = buildStatusResponse(res, body);
+      console.log("dank res",statusResponse)
     } else {
       statusResponse = buildStatusResponse(
         { data: statusMentorShipResponse },
@@ -196,6 +197,7 @@ export const statusMentorshipService = async (body: any): Promise<any> => {
 
     return statusResponse;
   } catch (error) {
+    console.log("dank error",error)
     return { error: error, errorOccured: true };
   }
 };
@@ -236,11 +238,12 @@ export const trackMentorshipService = async (body: any): Promise<any> => {
       let res = await axios.post(`${gatewayUrl}/track`, trackRequest.payload, {
         headers
       });
-      trackResponse = buildTrackResponse(res?.data);
-    } else {
-      trackResponse = buildTrackResponse(cancelMentorShipResponse);
+      trackResponse = buildTrackResponse(res, body);
     }
-    return { data: trackResponse };
+    // } else {
+    //   trackResponse = buildTrackResponse(cancelMentorShipResponse);
+    // }
+    return trackResponse;
   } catch (error) {
     return { error: error, errorOccured: true };
   }

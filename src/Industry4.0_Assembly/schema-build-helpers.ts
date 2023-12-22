@@ -23,7 +23,6 @@ export const buildContext = (input: any = {}) => {
     ttl: "PT10M", // ask Ajay for its significance
     transaction_id: input?.transactionId ?? uuid()
   };
-console.log("input bpp",input.bppId)
   return context;
 };
 
@@ -115,7 +114,7 @@ export const buildSearchResponse = (
 
     
   const inputs = response?.data?.responses;
-  // console.log("print res", inputs)
+
   const { transaction_id: transactionId, message_id: messageId, bpp_id: bppId, bpp_uri: bppUri }: any = inputs?.[0]?.context ?? {};
   const context = { transactionId, messageId, bppId, bppUri };
 
@@ -231,7 +230,7 @@ export const buildInitRequest = (input: any = {}) => {
     bpp_id: input?.context?.domain,
     bpp_uri: input?.context?.bppUri,
     action: "init",
-    // console.log("")
+
   });
 
   const message: any = { 
@@ -520,6 +519,7 @@ export const buildConfirmResponse = (response: any = {}, body: any = {}) => {
       messageId: input?.context?.message_id,
       bppId: input?.context?.bpp_id,
       bppUri: input?.context?.bpp_uri,
+      timestamp: input?.context?.timestamp
     };
   
   
@@ -647,8 +647,7 @@ export const buildConfirmResponse = (response: any = {}, body: any = {}) => {
             },
         } , 
         }
-      ]
-      
+      ],
       type: "DEFAULT"
     }
    
@@ -659,28 +658,168 @@ export const buildConfirmResponse = (response: any = {}, body: any = {}) => {
   return { data: { context, confirmProv } };
 };
 
-
 export const buildStatusRequest = (input: any = {}) => {
   const context = buildContext({
     ...input?.context,
-    category: "courses",
-    action: "confirm"
+    domain: input?.context?.domain,
+    bpp_id: input?.context?.bppId,
+    bpp_uri: input?.context?.bppUri,
+    action: "status"
   });
-  const message = {};
+  const message = {
+    order_id: input?.orderId
+  };
   return { payload: { context, message } };
 };
-export const buildStatusResponse = (response: any = {}, input: any = {}) => {
+export const buildStatusResponse = (response: any = {},body: any = {}) => {
+  const input = response?.data?.responses?.[0]; 
+  
+
+  if (!input)
+    return { status: 200 };
   const context = {
-    transactionId: response?.context?.message_id,
-    bppId: response?.context?.bpp_id,
-    bppUri: response?.context?.bpp_uri
+    transactionId: input?.context?.transaction_id,
+    messageId: input?.context?.message_id,
+    bppId: input?.context?.bpp_id,
+    bppUri: input?.context?.bpp_uri,
   };
 
-  return { context };
+  const provider = input?.message?.order?.provider;
+  const item = input?.message?.order?.items?.[0];
+  const fulfillment = input?.message?.order?.fulfillments?.[0];
+  const payments = input?.message?.order?.payments?.[0];
+  const breakup = input?.message?.order?.quote?.breakup?.[0]
+  const cancellation = input?.message?.order?.quote?.cancellation_terms?.[0]
+  
+const statusProv = {
+  order:{
+    id: input?.message?.order?.id,
+    provider: {
+      id: provider?.id,
+      descriptor:{
+      name: provider?.descriptor?.name,
+      short_desc: provider?.descriptor?.short_desc,
+      long_desc: provider?.descriptor?.long_desc,
+      image: provider?.descriptor?.images?.map((image: any) => image?.url),
+      },
+    },
+      // items:[
+      //   {
+      //     id: item?.id,
+      //     descriptor:{
+      //       name: item?.descriptor?.name,
+      //     },
+      //     category_ids: [
+      //       item?.category_ids,
+      //     ],
+      //     price: {
+      //       currency: item?.price?.currency,
+      //       value: item?.price?.value,
+      //   }
+      //   },
+      // ], 
+      fulfillments: [{
+        id: fulfillment?.id,
+        state: {
+          descriptor: {
+              code: fulfillment?.state?.descriptor?.code,
+              short_desc:  fulfillment?.state?.descriptor?.short_desc
+          },
+          updated_at: fulfillment?.state?.updated_at,
+      },
+            // customer:{
+            //   contact:{
+            //     email: fulfillment?.customer?.contact?.email,
+            //     phone: fulfillment?.customer?.contact?.phone,
+            //   },
+            //   person: {
+            //     name: fulfillment?.customer?.person?.name,
+            //   }
+            // },
+            // stops:[
+            //   {
+            //     type: fulfillment?.stops[0]?.type,
+            //     location:{
+            //       gps:fulfillment?.stops[0]?.location?.gps,
+            //       address: fulfillment?.stops[0]?.location?.address,
+            //     },
+            //     contact: {
+            //       phone: fulfillment?.stops[0]?.contact?.phone
+            //     }
+            //   },
+            // ],
+            tracking: fulfillment?.tracking,
+        
+      }],
+      // billing:{
+      //   name: input?.message?.order?.billing?.name,
+      //   address:input?.message?.order?.billing?.address,
+      //   state:{
+      //     name: input?.message?.order?.billing?.state?.name,
+      //   },
+      //   city:{
+      //     name:input?.message?.order?.billing?.city?.name,
+      //   },
+      //   email: input?.message?.order?.billing?.email,
+      //   phone: input?.message?.order?.billing?.phone
+      // },
+    //   payments: [
+    //     {
+    //         collected_by: payments?.collected_by,
+    //         params: {
+    //             amount: payments?.params?.amount,
+    //             currency: payments?.params?.currency,
+    //             bank_account_number: payments?.params?.bank_account_number,
+    //             bank_code: payments?.params?.params?.bank_code,
+    //             bank_account_name: payments?.params?.bank_account_name
+    //         },
+    //         status: payments?.status,
+    //         type: payments?.type,
+    //         transaction_id: payments?.transaction_id
+    //     }
+    // ],
+    // quote: {
+    //     breakup: [
+    //         {
+    //             price: {
+    //                 currency: breakup?.price?.currency,
+    //                 value: breakup?.price?.value,
+    //             },
+    //             title: breakup?.title
+    //         },
+    //         {
+    //           price: {
+    //             currency: breakup?.price?.currency,
+    //             value: breakup?.price?.value,
+    //         },
+    //           title: breakup?.title
+    //         },
+            
+    //     ],
+    //     price: {
+    //         currency: input?.message?.order?.quote?.price?.currency,
+    //         value: input?.message?.order?.quote?.price?.value
+    //     }
+    // },
+    // cancellation_terms:[
+    //   {
+    //     cancellation_fee: {
+    //       amount: {
+    //           currency: cancellation?.cancellation_fee?.amount?.currency,
+    //           value: cancellation?.cancellation_fee?.amount?.value,
+    //       },
+    //   } , 
+    //   }
+    // ],
+    type: "DEFAULT"
+  }
+ 
+};
+
+  return { data: {context , statusProv } };
 };
 
 export const buildSelectRequest = (input: any = {}) => {
-  // console.log("input Context======>",input?.context)
   const context = buildContext({
     ...input?.context,
     action: "select",
@@ -688,7 +827,6 @@ export const buildSelectRequest = (input: any = {}) => {
     bpp_id: input?.context?.bppId,
     bpp_uri: input?.context?.bppUri,
   });
-  // console.log("Output Context======>",context)
   const message:any = {
     order :{
       provider:{
@@ -710,7 +848,6 @@ export const buildSelectRequest = (input: any = {}) => {
 };
 export const buildSelectResponse = (response: any = {}, body: any = {}) => {
   const input = response?.data?.responses?.[0];
-  // console.log("dank input",input)
   if (!input)
     return { status: 200 };
     const context = {
@@ -792,3 +929,32 @@ export const buildSelectResponse = (response: any = {}, body: any = {}) => {
 };
 
 
+export const buildTrackRequest = (input: any = {}) => {
+  const context = buildContext({
+    ...input?.context,
+    domain: input?.context?.domain,
+    bpp_id: input?.context?.bppId,
+    bpp_uri: input?.context?.bppUri,
+    action: "track"
+  });
+  const message = {
+    order_id: input?.orderId
+  };
+  return { payload: { context, message } };
+};
+export const buildTrackResponse = (response: any = {}, body: any = {}) => {
+  const input = response?.data?.responses?.[0]; 
+   console.log("dank trackrs",input)
+
+  if (!input)
+    return { status: 200 };
+  const context = {
+    transactionId: input?.context?.transaction_id,
+    messageId: input?.context?.message_id,
+    bppId: input?.context?.bpp_id,
+    bppUri: input?.context?.bpp_uri,
+  };
+  const trackUrl = input?.message?.tracking?.url;
+
+  return { data: {context , trackUrl } };
+};
