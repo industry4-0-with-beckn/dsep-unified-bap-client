@@ -85,7 +85,7 @@ export const searchMentorShipService = async (body: any): Promise<any> => {
         body
       );
     }
-
+    // console.log("Search res",searchResponse)
     return searchResponse;
   } catch (error: any) {
     return { error: error, errorOccured: true };
@@ -95,7 +95,7 @@ export const searchMentorShipService = async (body: any): Promise<any> => {
 export const selectMentorshipService = async (body: any): Promise<any> => {
   try {
     const selectRequest = buildSelectRequest(body);
-    console.log(JSON.stringify(selectRequest?.payload));
+    // console.log("Select Payload=======>",JSON.stringify(selectRequest?.payload));
 
     let selectResponse: any = {};
     if (mentorshipNetwork !== "local") {
@@ -105,15 +105,21 @@ export const selectMentorshipService = async (body: any): Promise<any> => {
         selectRequest.payload,
         { headers }
       );
+      // console.log("dank res",res?.data)
       selectResponse = buildSelectResponse(res, body);
-    } else {
+      // console.log("Select response=======>",JSON.stringify(body));
+    } 
+    else {
       selectResponse = buildSelectResponse(
         { data: selectMentorshipResp },
         body
       );
+ 
     }
+    console.log("Select body",JSON.stringify(body))
     return selectResponse;
   } catch (error: any) {
+    console.log("error",error)
     return { error: error, errorOccured: true };
   }
 };
@@ -148,7 +154,7 @@ export const confirmMentorshipService = async (body: any): Promise<any> => {
 export const initMentorshipService = async (body: any): Promise<any> => {
   try {
     const initRequest = buildInitRequest(body);
-    console.log(JSON.stringify(initRequest?.payload));
+    console.log("dank init request",JSON.stringify(initRequest?.payload));
     let initResponse: any = {};
     if (mentorshipNetwork !== "local") {
       const headers = { "Content-Type": "application/JSON" };
@@ -156,11 +162,14 @@ export const initMentorshipService = async (body: any): Promise<any> => {
         headers
       });
       initResponse = buildInitResponse(res, body);
+            console.log("init response=======>",JSON.stringify(initResponse));
+
     } else {
       initResponse = buildInitResponse({ data: initMentorShipResponse }, body);
     }
     return initResponse;
   } catch (error) {
+    console.log("dank error msg",error)
     return { error: error, errorOccured: true };
   }
 };
@@ -178,6 +187,7 @@ export const statusMentorshipService = async (body: any): Promise<any> => {
         { headers }
       );
       statusResponse = buildStatusResponse(res, body);
+      console.log("dank res",statusResponse)
     } else {
       statusResponse = buildStatusResponse(
         { data: statusMentorShipResponse },
@@ -187,6 +197,7 @@ export const statusMentorshipService = async (body: any): Promise<any> => {
 
     return statusResponse;
   } catch (error) {
+    console.log("dank error",error)
     return { error: error, errorOccured: true };
   }
 };
@@ -227,11 +238,12 @@ export const trackMentorshipService = async (body: any): Promise<any> => {
       let res = await axios.post(`${gatewayUrl}/track`, trackRequest.payload, {
         headers
       });
-      trackResponse = buildTrackResponse(res?.data);
-    } else {
-      trackResponse = buildTrackResponse(cancelMentorShipResponse);
+      trackResponse = buildTrackResponse(res, body);
     }
-    return { data: trackResponse };
+    // } else {
+    //   trackResponse = buildTrackResponse(cancelMentorShipResponse);
+    // }
+    return trackResponse;
   } catch (error) {
     return { error: error, errorOccured: true };
   }
